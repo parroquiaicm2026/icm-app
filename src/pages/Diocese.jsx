@@ -7,10 +7,10 @@ export default function Diocese() {
 
     // Initial State
     const initialTeam = {
-        parroco: { name: "P. Nombre Apellido", role: "Párroco", img: null },
+        parroco: { name: "P. Mario Selvan SVD", role: "Párroco", img: null },
         vicarios: [
-            { id: 1, name: "P. Nombre Apellido", role: "Vicario" },
-            { id: 2, name: "P. Nombre Apellido", role: "Vicario" },
+            { id: 1, name: "P. Héctor Maldonado", role: "Vicario" },
+            { id: 2, name: "P. Ceslao Font", role: "Vicario" },
         ],
         religiosos: [
             { id: 1, name: "Hna. Nombre", role: "Religiosa" },
