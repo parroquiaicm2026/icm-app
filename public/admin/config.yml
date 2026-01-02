@@ -1,0 +1,134 @@
+backend:
+  name: git-gateway
+  branch: main # Cambia a 'master' si tu rama principal se llama así
+
+# Configuración de medios (imágenes)
+media_folder: "public/images/uploads"
+public_folder: "/images/uploads"
+
+# Configuración local para desarrollo (opcional)
+local_backend: true
+
+# Colecciones de contenido
+collections:
+  # Eventos del Calendario
+  - name: "events"
+    label: "Eventos del Calendario"
+    folder: "content/events"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Título", name: "title", widget: "string" }
+      - { label: "Fecha", name: "date", widget: "date", format: "YYYY-MM-DD" }
+      - { label: "Tipo", name: "type", widget: "select", options: ["Solemnidad", "Fiesta", "Memoria", "Liturgia", "Actividad", "Reunión", "Colecta", "Peregrinación", "Retiro", "Asamblea", "Formación", "Feriado", "Cumpleaños", "Aniversario", "Semana Santa", "Fundación"] }
+      - { label: "Categoría", name: "category", widget: "select", options: ["diocese", "svd"] }
+      - { label: "Descripción", name: "desc", widget: "text", required: false }
+
+  # Noticias
+  - name: "news"
+    label: "Novedades"
+    folder: "content/news"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Título", name: "title", widget: "string" }
+      - { label: "Fecha/Tiempo", name: "date", widget: "string", default: "Hoy" }
+      - { label: "Categoría", name: "category", widget: "string", default: "GENERAL" }
+      - { label: "Descripción", name: "description", widget: "text" }
+      - { label: "Destacado", name: "isFeatured", widget: "boolean", default: false }
+      - { label: "Color", name: "color", widget: "string", default: "var(--color-primary)", hint: "Usar variables CSS como var(--color-svd-green)" }
+
+  # Sacramentos
+  - name: "sacraments"
+    label: "Sacramentos"
+    folder: "content/sacraments"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Título", name: "title", widget: "string" }
+      - { label: "Icono", name: "icon", widget: "select", options: ["Users", "Star", "Heart", "MessageCircle", "MapPin", "Calendar"] }
+      - label: "Detalles"
+        name: "details"
+        widget: "list"
+        fields:
+          - { label: "Tipo", name: "type", widget: "select", options: ["text", "paragraph"] }
+          - { label: "Icono", name: "icon", widget: "select", options: ["calendar", "map", "none"], required: false }
+          - { label: "Contenido", name: "content", widget: "text" }
+      - label: "Acción (Botón)"
+        name: "action"
+        widget: "object"
+        required: false
+        fields:
+          - { label: "Etiqueta", name: "label", widget: "string" }
+          - { label: "Tipo", name: "type", widget: "string", default: "location" }
+          - { label: "Texto del Botón", name: "text", widget: "string" }
+
+  # Equipo Organizador
+  - name: "team"
+    label: "Equipo Organizador"
+    files:
+      - label: "Párroco"
+        name: "parroco"
+        file: "content/team/parroco.json"
+        fields:
+          - { label: "Nombre", name: "name", widget: "string" }
+          - { label: "Rol", name: "role", widget: "string", default: "Párroco" }
+          - { label: "Imagen", name: "img", widget: "image", required: false }
+      
+      - label: "Vicarios"
+        name: "vicarios"
+        file: "content/team/vicarios.json"
+        fields:
+          - label: "Lista de Vicarios"
+            name: "vicarios"
+            widget: "list"
+            fields:
+              - { label: "Nombre", name: "name", widget: "string" }
+              - { label: "Rol", name: "role", widget: "string", default: "Vicario" }
+      
+      - label: "Religiosos/as"
+        name: "religiosos"
+        file: "content/team/religiosos.json"
+        fields:
+          - label: "Lista de Religiosos/as"
+            name: "religiosos"
+            widget: "list"
+            fields:
+              - { label: "Nombre", name: "name", widget: "string" }
+              - { label: "Rol", name: "role", widget: "string" }
+      
+      - label: "Consejo Pastoral"
+        name: "consejo"
+        file: "content/team/consejo.json"
+        fields:
+          - label: "Miembros del Consejo"
+            name: "consejo"
+            widget: "list"
+            fields:
+              - { label: "Cargo y Nombre", name: "text", widget: "string" }
+      
+      - label: "Pastorales y Equipos"
+        name: "pastorales"
+        file: "content/team/pastorales.json"
+        fields:
+          - label: "Lista de Pastorales"
+            name: "pastorales"
+            widget: "list"
+            fields:
+              - { label: "Nombre", name: "name", widget: "string" }
+              - { label: "Detalles/Horario", name: "details", widget: "string" }
+
+  # Configuración General
+  - name: "settings"
+    label: "Configuración General"
+    files:
+      - label: "Información de la Parroquia"
+        name: "parish_info"
+        file: "content/settings/parish_info.json"
+        fields:
+          - { label: "Nombre de la Parroquia", name: "name", widget: "string", default: "ICM Parroquia" }
+          - { label: "Nombre Completo", name: "fullName", widget: "string", default: "Inmaculado Corazón de María" }
+          - { label: "Dirección", name: "address", widget: "text", required: false }
+          - { label: "Teléfono", name: "phone", widget: "string", required: false }
+          - { label: "Email", name: "email", widget: "string", required: false }
+          - { label: "Horarios de Misa", name: "massSchedule", widget: "text", required: false }
