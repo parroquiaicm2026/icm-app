@@ -1,0 +1,249 @@
+:root {
+  /* Institutional Colors - Premium Palette */
+  --color-svd-green: #166534;
+  --color-svd-green-light: #dcfce7;
+  --color-svd-red: #b91c1c;
+  --color-svd-red-light: #fee2e2;
+
+  /* Category Colors */
+  --color-virgin-blue: #1d4ed8;
+  --color-virgin-blue-light: #dbeafe;
+  --color-collection-gold: #b45309;
+  --color-collection-gold-light: #fef3c7;
+
+  /* Event Type Colors */
+  --color-solemnidad: #dc2626;
+  --color-solemnidad-light: #fee2e2;
+  --color-fiesta: #ea580c;
+  --color-fiesta-light: #ffedd5;
+  --color-memoria: #7c3aed;
+  --color-memoria-light: #f3e8ff;
+  --color-liturgia: #0891b2;
+  --color-liturgia-light: #cffafe;
+  --color-actividad: #059669;
+  --color-actividad-light: #d1fae5;
+  --color-reunion: #4f46e5;
+  --color-reunion-light: #e0e7ff;
+  --color-colecta: #ca8a04;
+  --color-colecta-light: #fef9c3;
+  --color-peregrinacion: #8b5cf6;
+  --color-peregrinacion-light: #f3e8ff;
+  --color-retiro: #0284c7;
+  --color-retiro-light: #e0f2fe;
+  --color-asamblea: #db2777;
+  --color-asamblea-light: #fce7f3;
+  --color-formacion: #65a30d;
+  --color-formacion-light: #ecfccb;
+  --color-feriado: #64748b;
+  --color-feriado-light: #f1f5f9;
+  --color-cumpleanos: #ec4899;
+  --color-cumpleanos-light: #fce7f3;
+  --color-aniversario: #f59e0b;
+  --color-aniversario-light: #fef3c7;
+  --color-default: #6366f1;
+  --color-default-light: #e0e7ff;
+
+  /* UI Colors */
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-surface-soft: #f1f5f9;
+
+  /* Section Backgrounds */
+  --color-section-green: #f0fdf4;
+  --color-section-blue: #eff6ff;
+  --color-section-gold: #fffbeb;
+  --color-section-rose: #fff1f2;
+
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-muted: #94a3b8;
+  --color-border: #e2e8f0;
+
+  --color-primary: #059669;
+  --color-accent: #3b82f6;
+
+  /* Shadow & Blur */
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+body {
+  margin: 0;
+  font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+/* Utilities */
+.container {
+  max-width: 480px;
+  /* Mobile-first app feel */
+  margin: 0 auto;
+  min-height: 100vh;
+  background-color: var(--color-surface);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.p-4 {
+  padding: 1rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0 0 0.5rem 0;
+  font-weight: 600;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.2s;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+
+.btn-primary {
+  background-color: var(--color-svd-green);
+  color: white;
+}
+
+.btn-lg {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Added Utilities */
+:root {
+  --color-primary: #7c3aed;
+  /* Violet */
+  --color-accent: #8b5cf6;
+  --color-text-gray: #4b5563;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.items-start {
+  align-items: flex-start;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.gap-3 {
+  gap: 0.75rem;
+}
+
+.gap-4 {
+  gap: 1rem;
+}
+
+.grid {
+  display: grid;
+}
+
+.shrink-0 {
+  flex-shrink: 0;
+}
+
+.mt-1 {
+  margin-top: 0.25rem;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.mb-3 {
+  margin-bottom: 0.75rem;
+}
+
+.mb-6 {
+  margin-bottom: 1.5rem;
+}
+
+.pb-24 {
+  padding-bottom: 6rem;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+}
+
+.text-xl {
+  font-size: 1.25rem;
+}
+
+.text-2xl {
+  font-size: 1.5rem;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.text-gray-600 {
+  color: var(--color-text-secondary);
+}
+
+.text-gray-800 {
+  color: var(--color-text-primary);
+}
