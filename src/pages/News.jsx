@@ -5,44 +5,19 @@ import { useAuth } from '../context/AuthContext';
 export default function News() {
     const { isAuthenticated } = useAuth();
 
-    const initialNews = [
-        {
-            id: 1,
-            title: "Fiesta de San Arnoldo",
-            date: "Próximamente",
-            category: "Destacado",
-            description: "Invitamos a toda la comunidad a celebrar juntos la fiesta de nuestro fundador. Habrá misa solemne y compartir fraterno.",
-            isFeatured: true,
-            color: 'var(--color-martyr-red)'
-        },
-        {
-            id: 2,
-            title: "Peregrinación a Loreto",
-            date: "15 Nov",
-            category: "PEREGRINACIÓN",
-            description: "Inscripciones abiertas en secretaría parroquial. Cupos limitados para el transporte.",
-            isFeatured: false,
-            color: 'var(--color-virgin-blue)'
-        },
-        {
-            id: 3,
-            title: "Comienzo de Pre-inscripciones",
-            date: "Hace 2 días",
-            category: "CATEQUESIS",
-            description: "Para el ciclo lectivo 2026. Acercarse con DNI del niño/a.",
-            isFeatured: false,
-            color: 'var(--color-svd-green)'
-        }
-    ];
-
-    const [newsItems, setNewsItems] = useState(() => {
-        const saved = localStorage.getItem('icm_news');
-        return saved ? JSON.parse(saved) : initialNews;
+    // Load news from CMS content
+    const newsModules = import.meta.glob('../content/news/*.json', { eager: true });
+    const cmsNews = Object.keys(newsModules).map((key) => {
+        const item = newsModules[key];
+        const slug = key.split('/').pop().replace('.json', '');
+        return {
+            id: slug,
+            ...(item.default || item)
+        };
     });
 
-    React.useEffect(() => {
-        localStorage.setItem('icm_news', JSON.stringify(newsItems));
-    }, [newsItems]);
+    const [newsItems, setNewsItems] = useState(cmsNews);
+
 
     const [editingId, setEditingId] = useState(null);
     const [editForm, setEditForm] = useState(null);

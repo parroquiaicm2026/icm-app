@@ -1,0 +1,8 @@
+{
+    "title": "Fiesta de San Arnoldo",
+    "date": "Próximamente",
+    "category": "Destacado",
+    "description": "Invitamos a toda la comunidad a celebrar juntos la fiesta de nuestro fundador. Habrá misa solemne y compartir fraterno.",
+    "isFeatured": true,
+    "color": "var(--color-martyr-red)"
+}

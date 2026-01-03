@@ -14,7 +14,8 @@ collections:
   # Eventos del Calendario
   - name: "events"
     label: "Eventos del Calendario"
-    folder: "content/events"
+    folder: "src/content/events"
+    extension: "json"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
@@ -27,7 +28,8 @@ collections:
   # Noticias
   - name: "news"
     label: "Novedades"
-    folder: "content/news"
+    folder: "src/content/news"
+    extension: "json"
     create: true
     slug: "{{slug}}"
     fields:
@@ -41,7 +43,8 @@ collections:
   # Sacramentos
   - name: "sacraments"
     label: "Sacramentos"
-    folder: "content/sacraments"
+    folder: "src/content/sacraments"
+    extension: "json"
     create: true
     slug: "{{slug}}"
     fields:
@@ -69,7 +72,7 @@ collections:
     files:
       - label: "Párroco"
         name: "parroco"
-        file: "content/team/parroco.json"
+        file: "src/content/team/parroco.json"
         fields:
           - { label: "Nombre", name: "name", widget: "string" }
           - { label: "Rol", name: "role", widget: "string", default: "Párroco" }
@@ -77,7 +80,7 @@ collections:
       
       - label: "Vicarios"
         name: "vicarios"
-        file: "content/team/vicarios.json"
+        file: "src/content/team/vicarios.json"
         fields:
           - label: "Lista de Vicarios"
             name: "vicarios"
@@ -88,7 +91,7 @@ collections:
       
       - label: "Religiosos/as"
         name: "religiosos"
-        file: "content/team/religiosos.json"
+        file: "src/content/team/religiosos.json"
         fields:
           - label: "Lista de Religiosos/as"
             name: "religiosos"
@@ -99,7 +102,7 @@ collections:
       
       - label: "Consejo Pastoral"
         name: "consejo"
-        file: "content/team/consejo.json"
+        file: "src/content/team/consejo.json"
         fields:
           - label: "Miembros del Consejo"
             name: "consejo"
@@ -109,7 +112,7 @@ collections:
       
       - label: "Pastorales y Equipos"
         name: "pastorales"
-        file: "content/team/pastorales.json"
+        file: "src/content/team/pastorales.json"
         fields:
           - label: "Lista de Pastorales"
             name: "pastorales"
@@ -124,7 +127,7 @@ collections:
     files:
       - label: "Información de la Parroquia"
         name: "parish_info"
-        file: "content/settings/parish_info.json"
+        file: "src/content/settings/parish_info.json"
         fields:
           - { label: "Nombre de la Parroquia", name: "name", widget: "string", default: "ICM Parroquia" }
           - { label: "Nombre Completo", name: "fullName", widget: "string", default: "Inmaculado Corazón de María" }
