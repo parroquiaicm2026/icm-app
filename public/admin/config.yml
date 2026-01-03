@@ -20,7 +20,7 @@ collections:
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
       - { label: "Título", name: "title", widget: "string" }
-      - { label: "Fecha", name: "date", widget: "date", format: "YYYY-MM-DD" }
+      - { label: "Fecha", name: "date", widget: "datetime", format: "YYYY-MM-DD" }
       - { label: "Tipo", name: "type", widget: "select", options: ["Solemnidad", "Fiesta", "Memoria", "Liturgia", "Actividad", "Reunión", "Colecta", "Peregrinación", "Retiro", "Asamblea", "Formación", "Feriado", "Cumpleaños", "Aniversario", "Semana Santa", "Fundación"] }
       - { label: "Categoría", name: "category", widget: "select", options: ["diocese", "svd"] }
       - { label: "Descripción", name: "desc", widget: "text", required: false }

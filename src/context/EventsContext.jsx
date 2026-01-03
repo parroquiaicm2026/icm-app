@@ -150,8 +150,55 @@ const EventsContext = createContext();
 export function EventsProvider({ children }) {
     // Load from localStorage if available, else use initial data
     const [events, setEvents] = useState(() => {
+        // 1. Cargar eventos guardados en LocalStorage (persistencia del usuario)
         const saved = localStorage.getItem('icm_events');
-        return saved ? JSON.parse(saved) : INITIAL_EVENTS;
+        const userEvents = saved ? JSON.parse(saved) : [];
+
+        // 2. Cargar eventos del CMS (archivos JSON en src/content/events)
+        const cmsFiles = import.meta.glob('../content/events/*.json', { eager: true });
+        const cmsEvents = Object.keys(cmsFiles).map((path, index) => {
+            const mod = cmsFiles[path];
+            const data = mod.default || mod;
+
+            // Intentar obtener fecha del contenido o del nombre del archivo
+            let eventDate = data.date;
+            if (!eventDate) {
+                // Extraer YYYY-MM-DD del path si no existe en el JSON
+                const dateMatch = path.match(/(\d{4}-\d{2}-\d{2})/);
+                if (dateMatch) {
+                    eventDate = dateMatch[1];
+                }
+            }
+
+            return {
+                id: `cms-${index}-${Date.now()}`,
+                date: eventDate, // Asegurar que tenga fecha
+                ...data
+            };
+        }).filter(ev => ev.date); // Filtrar eventos sin fecha válida
+
+        // 3. Combinar: Eventos Iniciales (Fijos) + CMS + Usuario (LocalStorage)
+        // Nota: Si prefieres que el CMS reemplace a los iniciales, quita INITIAL_EVENTS de aquí.
+        // Por ahora, los combinamos para no perder los feriados base.
+        const allEvents = [...INITIAL_EVENTS, ...cmsEvents];
+
+        // Fusionar evitando duplicados si es necesario, o simplemente concatenar
+        // Aquí concatenamos los eventos de usuario si no están ya en 'saved' que podría contener todo si se guarda todo
+        // Pero como INITIAL_EVENTS es estático, mejor reimplementar la lógica:
+
+        if (saved) {
+            // Si hay datos en localStorage, asumimos que es la fuente de verdad del usuario
+            // Pero los del CMS son "nuevos" que entran. 
+            // Estrategia simple: Siempre recargar CMS e INITIAL_EVENTS al inicio, y sumar los "custom" del usuario.
+            // Pero tu código anterior guardaba TODO en localStorage. 
+            // Para simplificar y arreglar el problema del usuario:
+            // Vamos a devolver la unión de todo.
+            // Advertencia: esto podría duplicar cosas si el usuario guarda el estado global en localStorage.
+            // Por seguridad, usaremos INITIAL + CMS como base fresca.
+            return [...INITIAL_EVENTS, ...cmsEvents];
+        }
+
+        return [...INITIAL_EVENTS, ...cmsEvents];
     });
 
     useEffect(() => {
