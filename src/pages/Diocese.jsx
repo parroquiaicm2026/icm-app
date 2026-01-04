@@ -6,33 +6,35 @@ export default function Diocese() {
     const { isAuthenticated } = useAuth();
 
     // Initial State
-    const initialTeam = {
-        parroco: { name: "P. Mario Selvan SVD", role: "Párroco", img: null },
-        vicarios: [
-            { id: 1, name: "P. Héctor Maldonado", role: "Vicario" },
-            { id: 2, name: "P. Ceslao Font", role: "Vicario" },
-        ],
-        religiosos: [
-            { id: 1, name: "Hna. Nombre", role: "Religiosa" },
-        ],
-        consejo: [
-            { id: 1, text: "Presidente: Nombre" },
-            { id: 2, text: "Secretario: Nombre" },
-            { id: 3, text: "Vocal: Nombre" },
-        ],
-        pastorales: [
-            { id: 1, name: 'Pastoral de la Salud', details: '2do sábado 16-18hs' },
-            { id: 2, name: 'Cáritas', details: 'Jueves 17-19hs' },
-            { id: 3, name: 'Liturgia', details: 'Martes 20hs' },
-            { id: 4, name: 'Catequesis', details: 'Sábados 9-11hs' },
-            { id: 5, name: 'Infancia y Adolescencia Misionera', details: 'Domingos 9hs' },
-        ]
+    // Load team data from CMS content
+    const teamFiles = import.meta.glob('../content/team/*.json', { eager: true });
+
+    // Helper to get data safely
+    const getTeamData = (fileName) => {
+        const file = teamFiles[`../content/team/${fileName}.json`];
+        return file ? (file.default || file) : null;
     };
 
-    const [team, setTeam] = useState(() => {
-        const saved = localStorage.getItem('icm_team');
-        return saved ? JSON.parse(saved) : initialTeam;
-    });
+    const loadedTeam = {
+        parroco: getTeamData('parroco') || { name: "P. Mario Selvan SVD", role: "Párroco" },
+        vicarios: getTeamData('vicarios')?.vicarios || [],
+        religiosos: getTeamData('religiosos')?.religiosos || [],
+        consejo: getTeamData('consejo')?.consejo || [],
+        pastorales: getTeamData('pastorales')?.pastorales || []
+    };
+
+    const [team, setTeam] = useState(loadedTeam);
+
+    // Update state if files change (hot reload support basically)
+    React.useEffect(() => {
+        setTeam({
+            parroco: getTeamData('parroco') || { name: "P. Mario Selvan SVD", role: "Párroco" },
+            vicarios: getTeamData('vicarios')?.vicarios || [],
+            religiosos: getTeamData('religiosos')?.religiosos || [],
+            consejo: getTeamData('consejo')?.consejo || [],
+            pastorales: getTeamData('pastorales')?.pastorales || []
+        });
+    }, []);
 
     React.useEffect(() => {
         localStorage.setItem('icm_team', JSON.stringify(team));

@@ -16,52 +16,21 @@ export default function Pastorals() {
     };
 
     // Initial data
-    const initialSacraments = [
-        {
-            id: 'baptism',
-            title: "Bautismo",
-            icon: 'Users',
-            details: [
-                { type: 'text', icon: 'calendar', content: "Fechas: 2dos y 4tos Sábados de cada mes" },
-                { type: 'text', icon: 'map', content: "Lugar: Templo Parroquial" }
-            ],
-            action: { label: "Contactar a Secretaría: +54 ...", type: 'location', text: 'Contactar Secretaría' }
-        },
-        {
-            id: 'communion',
-            title: "Primera Comunión",
-            icon: 'Star',
-            details: [
-                { type: 'paragraph', content: "Inscripciones abiertas para la catequesis infantil. Acercarse a secretaría para más información." }
-            ]
-        },
-        {
-            id: 'confirmation',
-            title: "Confirmaciones",
-            icon: 'Star',
-            details: [
-                { type: 'paragraph', content: "Preparación para jóvenes y adultos. Consultar horarios de encuentros en sede parroquial." }
-            ]
-        },
-        {
-            id: 'marriage',
-            title: "Matrimonio",
-            icon: 'Heart',
-            details: [
-                { type: 'paragraph', content: "Charlas prematrimoniales y reservas de fecha con 6 meses de anticipación." }
-            ]
-        }
-    ];
+    // Load sacraments from CMS content
+    const sacramentFiles = import.meta.glob('../content/sacraments/*.json', { eager: true });
 
-    const [sacraments, setSacraments] = useState(() => {
-        try {
-            const saved = localStorage.getItem('icm_sacraments');
-            return saved ? JSON.parse(saved) : initialSacraments;
-        } catch (e) {
-            console.error("Error loading sacraments:", e);
-            return initialSacraments;
-        }
+    // Transform files object into array
+    const cmsSacraments = Object.keys(sacramentFiles).map((path) => {
+        const mod = sacramentFiles[path];
+        const data = mod.default || mod;
+        const slug = path.split('/').pop().replace('.json', '');
+        return {
+            id: slug,
+            ...data
+        };
     });
+
+    const [sacraments, setSacraments] = useState(cmsSacraments);
 
     React.useEffect(() => {
         localStorage.setItem('icm_sacraments', JSON.stringify(sacraments));

@@ -34,7 +34,7 @@ collections:
     slug: "{{slug}}"
     fields:
       - { label: "Título", name: "title", widget: "string" }
-      - { label: "Fecha/Tiempo", name: "date", widget: "string", default: "Hoy" }
+      - { label: "Fecha/Tiempo", name: "date", widget: "datetime", default: "Hoy", format: "YYYY-MM-DD" }
       - { label: "Categoría", name: "category", widget: "string", default: "GENERAL" }
       - { label: "Descripción", name: "description", widget: "text" }
       - { label: "Destacado", name: "isFeatured", widget: "boolean", default: false }
