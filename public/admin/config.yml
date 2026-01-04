@@ -121,6 +121,18 @@ collections:
               - { label: "Nombre", name: "name", widget: "string" }
               - { label: "Detalles/Horario", name: "details", widget: "string" }
 
+  # Pastorales Detalladas (NUEVO)
+  - name: "pastorals"
+    label: "Pastorales (Detalle)"
+    folder: "src/content/pastorals"
+    extension: "json"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Nombre Pastoral", name: "title", widget: "string" }
+      - { label: "Descripción", name: "desc", widget: "text" }
+      - { label: "Imagen", name: "image", widget: "image", required: false }
+
   # Configuración General
   - name: "settings"
     label: "Configuración General"

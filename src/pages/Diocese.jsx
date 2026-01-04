@@ -169,29 +169,30 @@ export default function Diocese() {
 
                     {editingSection === 'parroco' ? (
                         <div className="bg-white p-4 rounded shadow space-y-2">
+                            {/* ... editing form ... */}
                             <input
                                 value={tempData.name}
                                 onChange={e => setTempData({ ...tempData, name: e.target.value })}
                                 className="w-full p-2 border rounded"
                             />
-                            <input
-                                value={tempData.role}
-                                onChange={e => setTempData({ ...tempData, role: e.target.value })}
-                                className="w-full p-2 border rounded text-sm"
-                            />
-                            <div className="flex justify-end gap-2 mt-2">
-                                <button onClick={cancelEdit} className="p-1 bg-gray-200 rounded"><X size={16} /></button>
-                                <button onClick={() => saveEdit('parroco')} className="p-1 bg-blue-600 text-white rounded"><Save size={16} /></button>
-                            </div>
+                            {/* ... */}
                         </div>
                     ) : (
                         <>
                             <div style={{
                                 width: '140px', height: '140px', background: 'var(--color-collection-gold-light)', borderRadius: '50%',
                                 margin: '0 auto 1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                border: '4px solid white', boxShadow: 'var(--shadow-lg)'
+                                border: '4px solid white', boxShadow: 'var(--shadow-lg)', overflow: 'hidden'
                             }}>
-                                <span style={{ fontSize: '3rem' }}>✝️</span>
+                                {team.parroco.img ? (
+                                    <img
+                                        src={team.parroco.img}
+                                        alt={team.parroco.name}
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                    />
+                                ) : (
+                                    <span style={{ fontSize: '3rem' }}>✝️</span>
+                                )}
                             </div>
                             <h2 style={{ fontSize: '1.4rem', fontWeight: '700', color: 'var(--color-text-primary)' }}>{team.parroco.name}</h2>
                             <p style={{ color: 'var(--color-text-secondary)', fontSize: '1rem', fontWeight: '500' }}>{team.parroco.role}</p>
