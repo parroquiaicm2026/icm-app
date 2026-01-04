@@ -5,6 +5,143 @@ import { useAuth } from '../context/AuthContext';
 export default function News() {
     const { isAuthenticated } = useAuth();
 
+    // Setup helper component for News Items to handle individual expansion state
+    const NewsItem = ({ item, isAuthenticated, onEdit, onDelete }) => {
+        const [isExpanded, setIsExpanded] = useState(false);
+        const isLong = item.description && item.description.length > 200; // Approx 5 lines threshold
+
+        // FEATURED CARD
+        if (item.isFeatured) {
+            return (
+                <div style={{
+                    backgroundColor: 'white',
+                    borderRadius: '1.5rem',
+                    overflow: 'hidden',
+                    boxShadow: 'var(--shadow-lg)',
+                    position: 'relative',
+                    border: '1px solid var(--color-border)'
+                }}>
+                    {isAuthenticated && (
+                        <div className="absolute top-2 right-2 z-10 flex gap-1">
+                            <button onClick={onEdit} className="p-1.5 bg-white rounded-full shadow hover:text-blue-600"><Edit2 size={16} /></button>
+                            <button onClick={onDelete} className="p-1.5 bg-white rounded-full shadow hover:text-red-600"><Trash2 size={16} /></button>
+                        </div>
+                    )}
+                    <div style={{
+                        height: '200px',
+                        backgroundColor: item.color || 'var(--color-martyr-red)',
+                        position: 'relative',
+                        display: 'flex',
+                        alignItems: 'end',
+                        padding: '1.5rem',
+                        backgroundImage: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)'
+                    }}>
+                        <span style={{
+                            position: 'absolute', top: '1rem', right: '1rem',
+                            background: 'white', color: item.color || 'var(--color-martyr-red)',
+                            padding: '0.25rem 0.75rem', borderRadius: '2rem',
+                            fontSize: '0.75rem', fontWeight: 'bold'
+                        }}>
+                            Destacado
+                        </span>
+                        <div style={{ position: 'relative', zIndex: 1, color: 'white' }}>
+                            <h2 style={{ margin: '0 0 0.5rem', fontSize: '1.25rem' }}>{item.title}</h2>
+                            <p style={{ margin: 0, fontSize: '0.9rem', opacity: 0.9 }}>{item.date}</p>
+                        </div>
+                    </div>
+                    <div style={{ padding: '1.5rem' }}>
+                        <p style={{
+                            color: 'var(--color-text-secondary)',
+                            fontSize: '0.95rem',
+                            lineHeight: '1.5',
+                            margin: '0 0 1rem',
+                            display: '-webkit-box',
+                            WebkitLineClamp: isExpanded ? 'unset' : 5,
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden'
+                        }}>
+                            {item.description}
+                        </p>
+
+                        {isLong && (
+                            <button
+                                onClick={() => setIsExpanded(!isExpanded)}
+                                className="btn"
+                                style={{
+                                    width: '100%',
+                                    justifyContent: 'space-between',
+                                    background: '#f5f5f5',
+                                    color: 'var(--color-text-primary)'
+                                }}
+                            >
+                                {isExpanded ? "Leer menos" : "Leer más"}
+                                {isExpanded ? <X size={18} /> : <ArrowRight size={18} />}
+                            </button>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        // STANDARD CARD
+        return (
+            <div style={{
+                backgroundColor: 'white',
+                borderRadius: '1rem',
+                padding: '1.5rem',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+                borderLeft: `4px solid ${item.color || 'gray'}`,
+                position: 'relative'
+            }}>
+                {isAuthenticated && (
+                    <div className="absolute top-2 right-2 flex gap-1">
+                        <button onClick={onEdit} className="p-1 text-gray-400 hover:text-blue-600"><Edit2 size={16} /></button>
+                        <button onClick={onDelete} className="p-1 text-gray-400 hover:text-red-600"><Trash2 size={16} /></button>
+                    </div>
+                )}
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                    <span style={{ fontSize: '0.8rem', color: item.color || 'gray', fontWeight: '600' }}>{item.category}</span>
+                    <span style={{ fontSize: '0.8rem', color: '#999' }}>{item.date}</span>
+                </div>
+                <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.1rem' }}>{item.title}</h3>
+                <p style={{
+                    margin: 0,
+                    color: 'var(--color-text-secondary)',
+                    fontSize: '0.9rem',
+                    display: '-webkit-box',
+                    WebkitLineClamp: isExpanded ? 'unset' : 5,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden'
+                }}>
+                    {item.description}
+                </p>
+                {isLong && (
+                    <button
+                        onClick={() => setIsExpanded(!isExpanded)}
+                        style={{
+                            background: 'none',
+                            border: 'none',
+                            color: item.color || '#2563eb',
+                            fontWeight: '600',
+                            fontSize: '0.85rem',
+                            cursor: 'pointer',
+                            marginTop: '0.75rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.25rem'
+                        }}
+                    >
+                        {isExpanded ? (
+                            <>Leer menos <X size={14} /></>
+                        ) : (
+                            <>Leer más... <ArrowRight size={14} /></>
+                        )}
+                    </button>
+                )}
+            </div>
+        );
+    };
+
     // Load news from CMS content
     const newsModules = import.meta.glob('../content/news/*.json', { eager: true });
     const cmsNews = Object.keys(newsModules).map((key) => {
@@ -148,87 +285,15 @@ export default function News() {
 
                     {newsItems.map(item => {
                         if (editingId === item.id) return <div key={item.id}>{renderEditor()}</div>;
-
-                        if (item.isFeatured) {
-                            return (
-                                <div key={item.id} style={{
-                                    backgroundColor: 'white',
-                                    borderRadius: '1.5rem',
-                                    overflow: 'hidden',
-                                    boxShadow: 'var(--shadow-lg)',
-                                    position: 'relative',
-                                    border: '1px solid var(--color-border)'
-                                }}>
-                                    {isAuthenticated && (
-                                        <div className="absolute top-2 right-2 z-10 flex gap-1">
-                                            <button onClick={() => handleEdit(item)} className="p-1.5 bg-white rounded-full shadow hover:text-blue-600"><Edit2 size={16} /></button>
-                                            <button onClick={() => handleDelete(item.id)} className="p-1.5 bg-white rounded-full shadow hover:text-red-600"><Trash2 size={16} /></button>
-                                        </div>
-                                    )}
-                                    <div style={{
-                                        height: '200px',
-                                        backgroundColor: item.color || 'var(--color-martyr-red)',
-                                        position: 'relative',
-                                        display: 'flex',
-                                        alignItems: 'end',
-                                        padding: '1.5rem',
-                                        backgroundImage: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)'
-                                    }}>
-                                        <span style={{
-                                            position: 'absolute', top: '1rem', right: '1rem',
-                                            background: 'white', color: item.color || 'var(--color-martyr-red)',
-                                            padding: '0.25rem 0.75rem', borderRadius: '2rem',
-                                            fontSize: '0.75rem', fontWeight: 'bold'
-                                        }}>
-                                            Destacado
-                                        </span>
-                                        <div style={{ position: 'relative', zIndex: 1, color: 'white' }}>
-                                            <h2 style={{ margin: '0 0 0.5rem', fontSize: '1.25rem' }}>{item.title}</h2>
-                                            <p style={{ margin: 0, fontSize: '0.9rem', opacity: 0.9 }}>{item.date}</p>
-                                        </div>
-                                    </div>
-                                    <div style={{ padding: '1.5rem' }}>
-                                        <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.95rem', lineHeight: '1.5', margin: '0 0 1rem' }}>
-                                            {item.description}
-                                        </p>
-                                        <button className="btn" style={{
-                                            width: '100%',
-                                            justifyContent: 'space-between',
-                                            background: '#f5f5f5',
-                                            color: 'var(--color-text-primary)'
-                                        }}>
-                                            Leer más <ArrowRight size={18} />
-                                        </button>
-                                    </div>
-                                </div>
-                            );
-                        } else {
-                            return (
-                                <div key={item.id} style={{
-                                    backgroundColor: 'white',
-                                    borderRadius: '1rem',
-                                    padding: '1.5rem',
-                                    boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
-                                    borderLeft: `4px solid ${item.color || 'gray'}`,
-                                    position: 'relative'
-                                }}>
-                                    {isAuthenticated && (
-                                        <div className="absolute top-2 right-2 flex gap-1">
-                                            <button onClick={() => handleEdit(item)} className="p-1 text-gray-400 hover:text-blue-600"><Edit2 size={16} /></button>
-                                            <button onClick={() => handleDelete(item.id)} className="p-1 text-gray-400 hover:text-red-600"><Trash2 size={16} /></button>
-                                        </div>
-                                    )}
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                                        <span style={{ fontSize: '0.8rem', color: item.color || 'gray', fontWeight: '600' }}>{item.category}</span>
-                                        <span style={{ fontSize: '0.8rem', color: '#999' }}>{item.date}</span>
-                                    </div>
-                                    <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.1rem' }}>{item.title}</h3>
-                                    <p style={{ margin: 0, color: 'var(--color-text-secondary)', fontSize: '0.9rem' }}>
-                                        {item.description}
-                                    </p>
-                                </div>
-                            );
-                        }
+                        return (
+                            <NewsItem
+                                key={item.id}
+                                item={item}
+                                isAuthenticated={isAuthenticated}
+                                onEdit={() => handleEdit(item)}
+                                onDelete={() => handleDelete(item.id)}
+                            />
+                        );
                     })}
 
                 </div>
