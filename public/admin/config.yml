@@ -147,3 +147,16 @@ collections:
           - { label: "Teléfono", name: "phone", widget: "string", required: false }
           - { label: "Email", name: "email", widget: "string", required: false }
           - { label: "Horarios de Misa", name: "massSchedule", widget: "text", required: false }
+
+  # Herramientas de Comunicación (Privado para Admins)
+  - name: "comunicacion"
+    label: "💬 Comunicación Interna"
+    editor:
+      preview: false
+    files:
+      - label: "Chat de Coordinadores"
+        name: "chat_links"
+        file: "src/content/internal/chat.json"
+        fields:
+          - { label: "Enlace del Grupo de WhatsApp", name: "link", widget: "string", default: "https://chat.whatsapp.com/GCIeU4Xn5H68Z6Rj8Kz5r5" }
+          - { label: "Aviso Importante", name: "info", widget: "markdown", default: "Use este enlace para acceder al grupo de coordinación. **No compartir públicamente.**" }
