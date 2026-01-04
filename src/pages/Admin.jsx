@@ -6,6 +6,8 @@ import { Plus, Edit2, Trash2, LogOut, X, Save } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 
+import chatData from '../content/internal/chat.json';
+
 export default function Admin() {
     const { isAuthenticated, logout } = useAuth();
     const { events, addEvent, updateEvent, deleteEvent } = useEvents();
@@ -86,6 +88,58 @@ export default function Admin() {
                     Salir
                 </button>
             </div>
+
+            {/* Internal Communication Section */}
+            {chatData.link && (
+                <div style={{
+                    background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
+                    borderRadius: '1rem',
+                    padding: '1.5rem',
+                    marginBottom: '2rem',
+                    color: 'white',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '1rem',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <span style={{ fontSize: '1.5rem' }}>💬</span>
+                        <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', margin: 0 }}>Comunicación Interna</h2>
+                    </div>
+
+                    {chatData.info && (
+                        <div style={{ fontSize: '0.95rem', opacity: 0.95, lineHeight: '1.5', background: 'rgba(0,0,0,0.1)', padding: '0.75rem', borderRadius: '0.5rem' }}>
+                            {chatData.info.replace(/\*\*/g, '')} {/* Simple stripped markdown */}
+                        </div>
+                    )}
+
+                    <a
+                        href={chatData.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                            background: 'white',
+                            color: '#128C7E',
+                            padding: '0.75rem 1rem',
+                            borderRadius: '0.5rem',
+                            textDecoration: 'none',
+                            fontWeight: 'bold',
+                            textAlign: 'center',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '0.5rem',
+                            transition: 'transform 0.2s',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+                        onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+                    >
+                        Unirse al Grupo de WhatsApp
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    </a>
+                </div>
+            )}
 
             <div style={{ marginBottom: '2rem' }}>
                 <button
