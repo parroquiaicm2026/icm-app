@@ -16,25 +16,33 @@ export default function Pastorals() {
     };
 
     // Initial data
-    // Load sacraments from CMS content
+    // Load content from both collections
     const sacramentFiles = import.meta.glob('../content/sacraments/*.json', { eager: true });
+    const pastoralFiles = import.meta.glob('../content/pastorals/*.json', { eager: true });
 
-    // Transform files object into array
-    const cmsSacraments = Object.keys(sacramentFiles).map((path) => {
-        const mod = sacramentFiles[path];
-        const data = mod.default || mod;
-        const slug = path.split('/').pop().replace('.json', '');
-        return {
-            id: slug,
-            ...data
-        };
-    });
+    // Helper to transform files
+    const transformFiles = (files, type) => {
+        return Object.keys(files).map((path) => {
+            const mod = files[path];
+            const data = mod.default || mod;
+            const slug = path.split('/').pop().replace('.json', '');
+            return {
+                id: slug,
+                source: type,
+                ...data
+            };
+        });
+    };
 
-    const [sacraments, setSacraments] = useState(cmsSacraments);
+    const loadedSacraments = transformFiles(sacramentFiles, 'sacrament');
+    const loadedPastorals = transformFiles(pastoralFiles, 'pastoral');
+
+    const [items, setItems] = useState([...loadedSacraments, ...loadedPastorals]);
 
     React.useEffect(() => {
-        localStorage.setItem('icm_sacraments', JSON.stringify(sacraments));
-    }, [sacraments]);
+        // Optional state persistence or sync if needed
+        // localStorage.setItem('icm_pastorals_all', JSON.stringify(items));
+    }, [items]);
 
     const [editForm, setEditForm] = useState(null);
 
@@ -44,14 +52,14 @@ export default function Pastorals() {
     };
 
     const handleSave = () => {
-        setSacraments(prev => prev.map(s => s.id === editingId ? editForm : s));
+        setItems(prev => prev.map(s => s.id === editingId ? editForm : s));
         setEditingId(null);
         setEditForm(null);
     };
 
     const handleDelete = (id) => {
         if (window.confirm("¿Seguro que desea eliminar este elemento?")) {
-            setSacraments(prev => prev.filter(s => s.id !== id));
+            setItems(prev => prev.filter(s => s.id !== id));
         }
     };
 
@@ -59,11 +67,11 @@ export default function Pastorals() {
         const newId = Date.now().toString();
         const newSacrament = {
             id: newId,
-            title: "Nuevo Sacramento",
+            title: "Nuevo Elemento",
             icon: 'Star',
             details: [{ type: 'paragraph', content: "Descripción aquí..." }]
         };
-        setSacraments([...sacraments, newSacrament]);
+        setItems([...items, newSacrament]);
         handleEdit(newSacrament);
     };
 
@@ -121,7 +129,7 @@ export default function Pastorals() {
             <div className="container" style={{ padding: '0 1.25rem' }}>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                    {sacraments.map((s) => (
+                    {items.map((s) => (
                         <div key={s.id} style={{
                             background: 'white',
                             borderRadius: '1.5rem',
@@ -182,7 +190,22 @@ export default function Pastorals() {
                                         </h2>
                                     </div>
                                     <div style={{ marginTop: '0.5rem' }}>
-                                        {s.details.map((detail, idx) => (
+                                        {/* Support for simple description (New Pastorals Format) */}
+                                        {s.desc && (
+                                            <div style={{ marginBottom: '1rem' }}>
+                                                {s.image && (
+                                                    <img
+                                                        src={s.image}
+                                                        alt={s.title}
+                                                        style={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: '1rem', marginBottom: '1rem' }}
+                                                    />
+                                                )}
+                                                <p style={{ color: '#4b5563', lineHeight: '1.6', whiteSpace: 'pre-line' }}>{s.desc}</p>
+                                            </div>
+                                        )}
+
+                                        {/* Support for structured details (Legacy/Sacraments Format) */}
+                                        {s.details && s.details.map((detail, idx) => (
                                             <div key={idx} className={`text-sm text-gray-600 mb-2 ${detail.icon ? 'flex items-start gap-2' : ''}`}>
                                                 {detail.icon === 'calendar' && <Calendar size={16} className="mt-1 shrink-0" />}
                                                 {detail.icon === 'map' && <MapPin size={16} className="mt-1 shrink-0" />}
