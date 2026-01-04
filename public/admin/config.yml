@@ -158,5 +158,5 @@ collections:
         name: "chat_links"
         file: "src/content/internal/chat.json"
         fields:
-          - { label: "Enlace del Grupo de WhatsApp", name: "link", widget: "string", default: "https://chat.whatsapp.com/GCIeU4Xn5H68Z6Rj8Kz5r5" }
+          - { label: "Enlace del Grupo de WhatsApp", name: "link", widget: "string", default: "https://chat.whatsapp.com/G36uI6V9D2O8K6vP9Y5o6z" }
           - { label: "Aviso Importante", name: "info", widget: "markdown", default: "Use este enlace para acceder al grupo de coordinación. **No compartir públicamente.**" }
