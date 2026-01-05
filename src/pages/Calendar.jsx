@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, MapPin, Users, Plus, Edit2, Trash2, X, Save } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, MapPin, Users, Plus, Edit2, Trash2, X, Save, ArrowRight } from 'lucide-react';
 import {
     format,
     addMonths,
@@ -40,6 +41,7 @@ const getMotivationalMessage = (date) => {
 export default function Calendar({ embedded = false, onDateSelect }) {
     const { events, addEvent, updateEvent, deleteEvent } = useEvents();
     const { isAuthenticated } = useAuth();
+    const navigate = useNavigate();
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [selectedDate, setSelectedDate] = useState(null);
@@ -106,6 +108,9 @@ export default function Calendar({ embedded = false, onDateSelect }) {
         };
         return typeMap[type] || { bg: 'var(--color-default-light)', color: 'var(--color-default)' };
     };
+
+    const monthEvents = getEventsForMonthList();
+    const listDisplayEvents = embedded ? monthEvents.slice(0, 2) : monthEvents;
 
     return (
         <div className={embedded ? "" : "container p-4"} style={embedded ? {} : { paddingBottom: '100px' }}>
@@ -274,18 +279,43 @@ export default function Calendar({ embedded = false, onDateSelect }) {
                     Agenda de {format(currentDate, 'MMMM', { locale: es })}
                 </h3>
 
-                {getEventsForMonthList().length === 0 ? (
+                {monthEvents.length === 0 ? (
                     <div style={{ textAlign: 'center', padding: '3rem 1.5rem', color: 'var(--color-text-secondary)', background: 'white', borderRadius: '2rem', border: '2px dashed var(--color-border)' }}>
                         <p style={{ margin: 0, fontSize: '1rem', fontWeight: '500' }}>No hay eventos programados en este mes.</p>
                     </div>
                 ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        {getEventsForMonthList().map((ev, idx) => (
+                        {listDisplayEvents.map((ev, idx) => (
                             <div key={idx} onClick={() => handleDateClick(parseISO(ev.date))} style={{ cursor: 'pointer' }}>
                                 <EventCard event={ev} />
                             </div>
                         ))}
                     </div>
+                )}
+
+                {embedded && monthEvents.length > 2 && (
+                    <button
+                        onClick={() => navigate('/calendar')}
+                        style={{
+                            width: '100%',
+                            marginTop: '1.5rem',
+                            padding: '0.8rem',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '0.5rem',
+                            background: 'white',
+                            border: '1px solid var(--color-border)',
+                            borderRadius: '1rem',
+                            color: 'var(--color-text-primary)',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s',
+                            fontSize: '0.95rem'
+                        }}
+                    >
+                        Ver agenda completa <ArrowRight size={18} />
+                    </button>
                 )}
             </div>
 

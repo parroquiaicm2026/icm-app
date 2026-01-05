@@ -9,7 +9,6 @@ export default function BottomNav() {
         { to: "/news", icon: Bell, label: "Novedades" },
         { to: "/pastorales", icon: BookOpen, label: "Pastorales" },
         { to: "/diocesis", icon: Map, label: "Equipo" },
-        { to: "/login", icon: Settings, label: "Admin" },
     ];
 
     return (

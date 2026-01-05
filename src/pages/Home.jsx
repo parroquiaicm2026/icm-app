@@ -1,8 +1,9 @@
 import React from 'react';
-import { Bell, BookOpen, Clock, Calendar as CalendarIcon, MapPin, Plus, Settings, Trash2 } from 'lucide-react';
+import { Bell, BookOpen, Clock, Calendar as CalendarIcon, MapPin, Plus, Settings, Trash2, ArrowRight } from 'lucide-react';
 import Calendar from './Calendar'; // Importing the page component
 import { useEvents } from '../context/EventsContext';
 import { useAuth } from '../context/AuthContext';
+import { useNews } from '../hooks/useNews';
 import { useNavigate } from 'react-router-dom';
 import { isSameDay, parseISO, isAfter, format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -10,6 +11,7 @@ import { es } from 'date-fns/locale';
 export default function Home() {
     const { events, deleteEvent } = useEvents();
     const { isAuthenticated } = useAuth();
+    const news = useNews();
     const navigate = useNavigate();
     const today = new Date();
     const [selectedDate, setSelectedDate] = React.useState(null);
@@ -137,186 +139,287 @@ export default function Home() {
 
             <div className="container" style={{ padding: '0 1.25rem' }}>
 
-                {/* Actividades Section */}
-                <section style={{
-                    marginBottom: '2.5rem',
-                    backgroundColor: displayEvents.length === 0 ? 'var(--color-section-blue)' : 'transparent',
-                    padding: displayEvents.length === 0 ? '1.5rem' : '0',
-                    borderRadius: '1.5rem',
-                    transition: 'all 0.3s ease'
-                }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-                        <h2 style={{ fontSize: '1.2rem', fontWeight: '700', margin: 0, display: 'flex', alignItems: 'center', gap: '0.6rem', color: 'var(--color-text-primary)' }}>
-                            <div style={{
-                                padding: '0.4rem',
-                                background: 'var(--color-svd-green-light)',
-                                borderRadius: '0.75rem',
-                                color: 'var(--color-svd-green)',
-                                display: 'flex'
-                            }}>
-                                <Clock size={18} />
-                            </div>
-                            {isShowingSelected
-                                ? `Actividades ${format(selectedDate, "d 'de' MMM", { locale: es })}`
-                                : (activeEvents.length > 0 ? "Actividades de Hoy" : "Próximas Actividades")}
-                        </h2>
-                        {isAuthenticated && (
-                            <button
-                                onClick={() => navigate('/admin')}
-                                className="btn btn-primary"
-                                style={{
-                                    padding: '0.5rem 1rem',
-                                    fontSize: '0.85rem',
-                                    borderRadius: '1rem',
-                                    boxShadow: '0 4px 12px rgba(22, 101, 52, 0.2)'
-                                }}
-                            >
-                                <Plus size={16} style={{ marginRight: '4px' }} /> Agregar
-                            </button>
-                        )}
-                    </div>
-
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        {displayEvents.length > 0 ? (
-                            displayEvents.map(ev => {
-                                const eventColors = getEventColor(ev.type);
-                                return (
-                                    <div key={ev.id} style={{
-                                        backgroundColor: 'white',
-                                        borderRadius: '1.25rem',
-                                        padding: '1.25rem',
-                                        boxShadow: 'var(--shadow-md)',
-                                        display: 'flex',
-                                        gap: '1.25rem',
-                                        position: 'relative',
-                                        border: '1px solid var(--color-border)',
-                                        transition: 'transform 0.2s ease',
-                                        cursor: 'pointer'
+                <div className={!selectedDate ? "home-content-grid" : ""}>
+                    {/* Actividades Section */}
+                    <section style={{
+                        marginBottom: '2.5rem',
+                        backgroundColor: displayEvents.length === 0 ? 'var(--color-section-blue)' : 'transparent',
+                        padding: displayEvents.length === 0 ? '1.5rem' : '0',
+                        borderRadius: '1.5rem',
+                        transition: 'all 0.3s ease'
+                    }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+                            <h2 style={{ fontSize: '1.2rem', fontWeight: '700', margin: 0, display: 'flex', alignItems: 'center', gap: '0.6rem', color: 'var(--color-text-primary)' }}>
+                                <div style={{
+                                    padding: '0.4rem',
+                                    background: 'var(--color-svd-green-light)',
+                                    borderRadius: '0.75rem',
+                                    color: 'var(--color-svd-green)',
+                                    display: 'flex'
+                                }}>
+                                    <Clock size={18} />
+                                </div>
+                                {isShowingSelected
+                                    ? `Actividades ${format(selectedDate, "d 'de' MMM", { locale: es })}`
+                                    : (activeEvents.length > 0 ? "Actividades de Hoy" : "Próximas Actividades")}
+                            </h2>
+                            {isAuthenticated && (
+                                <button
+                                    onClick={() => navigate('/admin')}
+                                    className="btn btn-primary"
+                                    style={{
+                                        padding: '0.5rem 1rem',
+                                        fontSize: '0.85rem',
+                                        borderRadius: '1rem',
+                                        boxShadow: '0 4px 12px rgba(22, 101, 52, 0.2)'
                                     }}
+                                >
+                                    <Plus size={16} style={{ marginRight: '4px' }} /> Agregar
+                                </button>
+                            )}
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            {displayEvents.length > 0 ? (
+                                displayEvents.map(ev => {
+                                    const eventColors = getEventColor(ev.type);
+                                    return (
+                                        <div key={ev.id} style={{
+                                            backgroundColor: 'white',
+                                            borderRadius: '1.25rem',
+                                            padding: '1.25rem',
+                                            boxShadow: 'var(--shadow-md)',
+                                            display: 'flex',
+                                            gap: '1.25rem',
+                                            position: 'relative',
+                                            border: '1px solid var(--color-border)',
+                                            transition: 'transform 0.2s ease',
+                                            cursor: 'pointer'
+                                        }}
+                                            onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                                            onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                                        >
+                                            <div style={{
+                                                backgroundColor: eventColors.bg,
+                                                width: '3.5rem',
+                                                height: '3.5rem',
+                                                borderRadius: '1rem',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                color: eventColors.color,
+                                                flexShrink: 0
+                                            }}>
+                                                <CalendarIcon size={24} />
+                                            </div>
+                                            <div style={{ flex: 1 }}>
+                                                <h3 style={{ margin: '0 0 0.35rem', fontSize: '1.05rem', fontWeight: '700', color: 'var(--color-text-primary)' }}>{ev.title}</h3>
+                                                <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--color-text-secondary)', lineHeight: '1.4' }}>{ev.desc || ev.type}</p>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.75rem', flexWrap: 'wrap' }}>
+                                                    {(!selectedDate || !isSameDay(selectedDate, today)) && (
+                                                        <span style={{
+                                                            fontSize: '0.75rem',
+                                                            fontWeight: '700',
+                                                            color: eventColors.color,
+                                                            background: eventColors.bg,
+                                                            padding: '0.2rem 0.6rem',
+                                                            borderRadius: '0.5rem'
+                                                        }}>
+                                                            {new Date(ev.date + 'T00:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
+                                                        </span>
+                                                    )}
+                                                    {ev.type && (
+                                                        <span style={{
+                                                            fontSize: '0.7rem',
+                                                            color: 'white',
+                                                            background: eventColors.color,
+                                                            padding: '0.2rem 0.5rem',
+                                                            borderRadius: '0.4rem',
+                                                            fontWeight: '600',
+                                                            textTransform: 'uppercase',
+                                                            letterSpacing: '0.02em'
+                                                        }}>
+                                                            {ev.type}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            {isAuthenticated && (
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        if (window.confirm('¿Eliminar esta actividad?')) deleteEvent(ev.id);
+                                                    }}
+                                                    style={{
+                                                        position: 'absolute',
+                                                        top: '0.75rem',
+                                                        right: '0.75rem',
+                                                        background: 'var(--color-svd-red-light)',
+                                                        border: 'none',
+                                                        color: 'var(--color-svd-red)',
+                                                        cursor: 'pointer',
+                                                        padding: '0.4rem',
+                                                        borderRadius: '0.5rem',
+                                                        opacity: 0.8,
+                                                        display: 'flex'
+                                                    }}
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            )}
+                                        </div>
+                                    )
+                                })
+                            ) : (
+                                <div style={{
+                                    textAlign: 'center',
+                                    padding: '2.5rem 1.5rem',
+                                    background: 'white',
+                                    borderRadius: '1.5rem',
+                                    border: '2px dashed var(--color-border)',
+                                    boxShadow: 'var(--shadow-sm)'
+                                }}>
+                                    <p style={{
+                                        margin: '0 0 1rem 0',
+                                        color: 'var(--color-svd-green)',
+                                        fontSize: '1.1rem',
+                                        fontWeight: '600',
+                                        fontStyle: 'italic',
+                                        lineHeight: '1.5'
+                                    }}>
+                                        "{getMotivationalMessage(activeDate)}"
+                                    </p>
+                                    <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
+                                        No hay actividades programadas para esta fecha.
+                                    </p>
+                                </div>
+                            )}
+                            {!isShowingSelected && (
+                                <button
+                                    onClick={() => navigate('/calendar')}
+                                    style={{
+                                        alignSelf: 'center',
+                                        marginTop: '0.5rem',
+                                        background: 'transparent',
+                                        border: 'none',
+                                        color: 'var(--color-svd-green)',
+                                        fontSize: '0.95rem',
+                                        fontWeight: '600',
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.5rem',
+                                        padding: '0.5rem 1rem',
+                                        borderRadius: '1rem',
+                                        transition: 'background 0.2s'
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-svd-green-light)'}
+                                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                                >
+                                    Ver agenda completa <ArrowRight size={18} />
+                                </button>
+                            )}
+                            {isShowingSelected && (
+                                <button
+                                    onClick={() => setSelectedDate(null)}
+                                    style={{
+                                        alignSelf: 'center',
+                                        padding: '0.6rem 1.5rem',
+                                        fontSize: '0.9rem',
+                                        fontWeight: '600',
+                                        color: 'white',
+                                        background: 'var(--color-svd-green)',
+                                        border: 'none',
+                                        borderRadius: '2rem',
+                                        marginTop: '1rem',
+                                        cursor: 'pointer',
+                                        boxShadow: '0 4px 12px rgba(22, 101, 52, 0.2)',
+                                        transition: 'all 0.2s'
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+                                    onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                                >
+                                    Volver a Hoy
+                                </button>
+                            )}
+                        </div>
+                    </section>
+
+                    {/* News Section - Only visible when no date is selected */}
+                    {!selectedDate && news.length > 0 && (
+                        <section style={{ marginBottom: '2.5rem' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                                <h2 style={{ fontSize: '1.2rem', fontWeight: '700', margin: 0, display: 'flex', alignItems: 'center', gap: '0.6rem', color: 'var(--color-text-primary)' }}>
+                                    <div style={{
+                                        padding: '0.4rem',
+                                        background: 'var(--color-svd-red-light)',
+                                        borderRadius: '0.75rem',
+                                        color: 'var(--color-svd-red)',
+                                        display: 'flex'
+                                    }}>
+                                        <Bell size={18} />
+                                    </div>
+                                    Últimas Novedades
+                                </h2>
+                                <button
+                                    onClick={() => navigate('/news')}
+                                    style={{
+                                        background: 'none', border: 'none', color: 'var(--color-svd-green)',
+                                        fontSize: '0.85rem', fontWeight: '600', cursor: 'pointer'
+                                    }}
+                                >
+                                    Ver todas
+                                </button>
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                {news.slice(0, 2).map(item => (
+                                    <div
+                                        key={item.id}
+                                        onClick={() => navigate('/news')}
+                                        style={{
+                                            backgroundColor: 'white',
+                                            borderRadius: '1.25rem',
+                                            padding: '1.25rem',
+                                            boxShadow: 'var(--shadow-sm)',
+                                            border: '1px solid var(--color-border)',
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            gap: '0.5rem',
+                                            transition: 'transform 0.2s'
+                                        }}
                                         onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
                                         onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                                     >
-                                        <div style={{
-                                            backgroundColor: eventColors.bg,
-                                            width: '3.5rem',
-                                            height: '3.5rem',
-                                            borderRadius: '1rem',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            color: eventColors.color,
-                                            flexShrink: 0
-                                        }}>
-                                            <CalendarIcon size={24} />
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                            <span style={{
+                                                fontSize: '0.7rem', fontWeight: '700', color: 'var(--color-svd-red)',
+                                                textTransform: 'uppercase', letterSpacing: '0.05em',
+                                                background: 'var(--color-svd-red-light)',
+                                                padding: '2px 8px', borderRadius: '0.5rem'
+                                            }}>
+                                                {item.category || 'NOVEDAD'}
+                                            </span>
+                                            <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{item.date}</span>
                                         </div>
-                                        <div style={{ flex: 1 }}>
-                                            <h3 style={{ margin: '0 0 0.35rem', fontSize: '1.05rem', fontWeight: '700', color: 'var(--color-text-primary)' }}>{ev.title}</h3>
-                                            <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--color-text-secondary)', lineHeight: '1.4' }}>{ev.desc || ev.type}</p>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.75rem', flexWrap: 'wrap' }}>
-                                                {(!selectedDate || !isSameDay(selectedDate, today)) && (
-                                                    <span style={{
-                                                        fontSize: '0.75rem',
-                                                        fontWeight: '700',
-                                                        color: eventColors.color,
-                                                        background: eventColors.bg,
-                                                        padding: '0.2rem 0.6rem',
-                                                        borderRadius: '0.5rem'
-                                                    }}>
-                                                        {new Date(ev.date + 'T00:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
-                                                    </span>
-                                                )}
-                                                {ev.type && (
-                                                    <span style={{
-                                                        fontSize: '0.7rem',
-                                                        color: 'white',
-                                                        background: eventColors.color,
-                                                        padding: '0.2rem 0.5rem',
-                                                        borderRadius: '0.4rem',
-                                                        fontWeight: '600',
-                                                        textTransform: 'uppercase',
-                                                        letterSpacing: '0.02em'
-                                                    }}>
-                                                        {ev.type}
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        {isAuthenticated && (
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    if (window.confirm('¿Eliminar esta actividad?')) deleteEvent(ev.id);
-                                                }}
-                                                style={{
-                                                    position: 'absolute',
-                                                    top: '0.75rem',
-                                                    right: '0.75rem',
-                                                    background: 'var(--color-svd-red-light)',
-                                                    border: 'none',
-                                                    color: 'var(--color-svd-red)',
-                                                    cursor: 'pointer',
-                                                    padding: '0.4rem',
-                                                    borderRadius: '0.5rem',
-                                                    opacity: 0.8,
-                                                    display: 'flex'
-                                                }}
-                                            >
-                                                <Trash2 size={16} />
-                                            </button>
+                                        <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: '700', color: 'var(--color-text-primary)' }}>
+                                            {item.title}
+                                        </h3>
+                                        {item.description && (
+                                            <p style={{
+                                                margin: 0, fontSize: '0.9rem', color: 'var(--color-text-secondary)',
+                                                display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden'
+                                            }}>
+                                                {item.description}
+                                            </p>
                                         )}
                                     </div>
-                                )
-                            })
-                        ) : (
-                            <div style={{
-                                textAlign: 'center',
-                                padding: '2.5rem 1.5rem',
-                                background: 'white',
-                                borderRadius: '1.5rem',
-                                border: '2px dashed var(--color-border)',
-                                boxShadow: 'var(--shadow-sm)'
-                            }}>
-                                <p style={{
-                                    margin: '0 0 1rem 0',
-                                    color: 'var(--color-svd-green)',
-                                    fontSize: '1.1rem',
-                                    fontWeight: '600',
-                                    fontStyle: 'italic',
-                                    lineHeight: '1.5'
-                                }}>
-                                    "{getMotivationalMessage(activeDate)}"
-                                </p>
-                                <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
-                                    No hay actividades programadas para esta fecha.
-                                </p>
+                                ))}
                             </div>
-                        )}
-                        {isShowingSelected && (
-                            <button
-                                onClick={() => setSelectedDate(null)}
-                                style={{
-                                    alignSelf: 'center',
-                                    padding: '0.6rem 1.5rem',
-                                    fontSize: '0.9rem',
-                                    fontWeight: '600',
-                                    color: 'white',
-                                    background: 'var(--color-svd-green)',
-                                    border: 'none',
-                                    borderRadius: '2rem',
-                                    marginTop: '1rem',
-                                    cursor: 'pointer',
-                                    boxShadow: '0 4px 12px rgba(22, 101, 52, 0.2)',
-                                    transition: 'all 0.2s'
-                                }}
-                                onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-                                onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                            >
-                                Volver a Hoy
-                            </button>
-                        )}
-                    </div>
-                </section>
+                        </section>
+                    )}
+                </div>
 
                 {/* Calendar Section with distinct background */}
                 <section style={{
