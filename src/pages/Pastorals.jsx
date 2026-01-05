@@ -1,256 +1,279 @@
 import React, { useState } from 'react';
-import { Calendar, MapPin, MessageCircle, Heart, Users, Star, Plus, Edit2, Trash2, Save, X } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import {
+    Heart, Users, Droplets, BookOpen, Flame, HandMetal,
+    Ring, Cross, MessageCircle, Phone, FileText, ChevronRight
+} from 'lucide-react';
+
+const SACRAMENTS = [
+    {
+        id: 'bautismo',
+        title: "Bautismo",
+        icon: Droplets,
+        color: "#3b82f6",
+        description: "El Bautismo es el fundamento de toda la vida cristiana, el pórtico de la vida en el espíritu y la puerta que abre el acceso a los otros sacramentos.",
+        requirements: "DNI del niño/a, DNI de los padres y padrinos. Charla pre-bautismal obligatoria.",
+        contact: "Secretaría Parroquial - Lunes a Viernes de 8:00 a 12:00 hs."
+    },
+    {
+        id: 'comunion',
+        title: "Comunión",
+        icon: BookOpen,
+        color: "#f59e0b",
+        description: "La Eucaristía es el corazón y la cumbre de la vida de la Iglesia, pues en ella Cristo asocia su Iglesia y todos sus miembros a su sacrificio de alabanza.",
+        requirements: "Haber realizado el primer y segundo año de catequesis familiar. Bautismo previo.",
+        contact: "Coordinador de Catequesis de cada capilla."
+    },
+    {
+        id: 'confirmacion',
+        title: "Confirmación",
+        icon: Flame,
+        color: "#ef4444",
+        description: "Con el sacramento de la Confirmación, el vínculo de los bautizados con la Iglesia es más perfecto y los enriquece con una fuerza especial del Espíritu Santo.",
+        requirements: "Haber completado los años de catequesis de confirmación. Tener padrino/madrina confirmado.",
+        contact: "Secretaría Parroquial."
+    },
+    {
+        id: 'reconciliacion',
+        title: "Reconciliación",
+        icon: MessageCircle,
+        color: "#8b5cf6",
+        description: "Quienes se acercan al sacramento de la Penitencia obtienen de la misericordia de Dios el perdón de los pecados cometidos contra Él.",
+        requirements: "Examen de conciencia previo. Arrepentimiento sincero.",
+        contact: "Misas diarias o solicitar turno con el Sacerdote."
+    },
+    {
+        id: 'uncion',
+        title: "Unción de los Enfermos",
+        icon: HandMetal,
+        color: "#10b981",
+        description: "Con la sagrada unción de los enfermos y con la oración de los presbíteros, toda la Iglesia entera encomienda a los enfermos al Señor.",
+        requirements: "Estar atravesando una enfermedad grave o avanzada edad.",
+        contact: "Urgencias al teléfono de la Parroquia."
+    },
+    {
+        id: 'matrimonio',
+        title: "Matrimonio",
+        icon: Ring,
+        color: "#ec4899",
+        description: "La alianza matrimonial, por la que el varón y la mujer constituyen entre sí un consorcio de toda la vida, ordenada por su misma índole natural al bien de los cónyuges.",
+        requirements: "Partida de Bautismo legalizada para matrimonio, DNI, cursillo prematrimonial.",
+        contact: "Consultar con 6 meses de anticipación en Secretaría."
+    },
+    {
+        id: 'orden',
+        title: "Orden Sagrado",
+        icon: Cross,
+        color: "#6366f1",
+        description: "El Orden es el sacramento gracias al cual la misión confiada por Cristo a sus Apóstoles sigue siendo ejercida en la Iglesia hasta el fin de los tiempos.",
+        requirements: "Inquietud vocacional. Acompañamiento espiritual con el Párroco.",
+        contact: "P. Mario Selvan SVD o cualquier Sacerdote de la comunidad."
+    }
+];
 
 export default function Pastorals() {
-    const { isAuthenticated } = useAuth();
-    const [editingId, setEditingId] = useState(null);
-
-    const ICON_MAP = {
-        'Users': Users,
-        'Star': Star,
-        'Heart': Heart,
-        'MessageCircle': MessageCircle,
-        'MapPin': MapPin,
-        'Calendar': Calendar
-    };
-
-    // Initial data
-    // Load content from both collections
-    const sacramentFiles = import.meta.glob('../content/sacraments/*.json', { eager: true });
-    const pastoralFiles = import.meta.glob('../content/pastorals/*.json', { eager: true });
-
-    // Helper to transform files
-    const transformFiles = (files, type) => {
-        return Object.keys(files).map((path) => {
-            const mod = files[path];
-            const data = mod.default || mod;
-            const slug = path.split('/').pop().replace('.json', '');
-            return {
-                id: slug,
-                source: type,
-                ...data
-            };
-        });
-    };
-
-    const loadedSacraments = transformFiles(sacramentFiles, 'sacrament');
-    const loadedPastorals = transformFiles(pastoralFiles, 'pastoral');
-
-    const [items, setItems] = useState([...loadedSacraments, ...loadedPastorals]);
-
-    React.useEffect(() => {
-        // Optional state persistence or sync if needed
-        // localStorage.setItem('icm_pastorals_all', JSON.stringify(items));
-    }, [items]);
-
-    const [editForm, setEditForm] = useState(null);
-
-    const handleEdit = (sacrament) => {
-        setEditingId(sacrament.id);
-        setEditForm({ ...sacrament });
-    };
-
-    const handleSave = () => {
-        setItems(prev => prev.map(s => s.id === editingId ? editForm : s));
-        setEditingId(null);
-        setEditForm(null);
-    };
-
-    const handleDelete = (id) => {
-        if (window.confirm("¿Seguro que desea eliminar este elemento?")) {
-            setItems(prev => prev.filter(s => s.id !== id));
-        }
-    };
-
-    const handleAddNew = () => {
-        const newId = Date.now().toString();
-        const newSacrament = {
-            id: newId,
-            title: "Nuevo Elemento",
-            icon: 'Star',
-            details: [{ type: 'paragraph', content: "Descripción aquí..." }]
-        };
-        setItems([...items, newSacrament]);
-        handleEdit(newSacrament);
-    };
-
-    const updateDetail = (idx, value) => {
-        const newDetails = [...editForm.details];
-        newDetails[idx].content = value;
-        setEditForm({ ...editForm, details: newDetails });
-    };
-
-    const renderIcon = (iconName) => {
-        const IconComponent = ICON_MAP[iconName] || Star;
-        return <IconComponent size={24} />;
-    };
+    const [selectedId, setSelectedId] = useState(SACRAMENTS[0].id);
+    const activeSacrament = SACRAMENTS.find(s => s.id === selectedId);
 
     return (
         <div style={{ paddingBottom: '120px', background: 'var(--color-bg)', minHeight: '100vh' }}>
-            {/* Header */}
             <header style={{
-                padding: '2rem 1.5rem 3rem',
+                padding: '2rem 1.5rem',
                 background: 'linear-gradient(135deg, var(--color-virgin-blue) 0%, #1e3a8a 100%)',
                 color: 'white',
-                borderBottomLeftRadius: '2.5rem',
-                borderBottomRightRadius: '2.5rem',
+                borderBottomLeftRadius: '2rem',
+                borderBottomRightRadius: '2rem',
                 marginBottom: '2rem',
                 boxShadow: 'var(--shadow-lg)'
             }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                        <h1 style={{ fontSize: '1.5rem', fontWeight: '800', margin: 0, letterSpacing: '-0.025em' }}>Sacramentos</h1>
-                        <p style={{ margin: '0.25rem 0 0', opacity: 0.8, fontSize: '0.9rem' }}>Información y contacto</p>
-                    </div>
-                    {isAuthenticated && (
-                        <button
-                            onClick={handleAddNew}
-                            style={{
-                                background: 'rgba(255,255,255,0.15)',
-                                backdropFilter: 'blur(8px)',
-                                padding: '0.6rem 1rem',
-                                borderRadius: '1rem',
-                                border: '1px solid rgba(255,255,255,0.2)',
-                                color: 'white',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.5rem',
-                                fontWeight: '600'
-                            }}
-                        >
-                            <Plus size={18} /> Agregar
-                        </button>
-                    )}
-                </div>
+                <h1 style={{ fontSize: '1.75rem', fontWeight: '800', margin: 0, display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <Heart size={28} />
+                    Vida Sacramental
+                </h1>
+                <p style={{ margin: '0.5rem 0 0', opacity: 0.9, fontSize: '1rem' }}>Información, requisitos y contactos de nuestra comunidad.</p>
             </header>
 
-            <div className="container" style={{ padding: '0 1.25rem' }}>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                    {items.map((s) => (
-                        <div key={s.id} style={{
-                            background: 'white',
-                            borderRadius: '1.5rem',
-                            padding: '1.5rem',
-                            boxShadow: 'var(--shadow-md)',
-                            border: '1px solid var(--color-border)',
-                            position: 'relative',
-                            transition: 'transform 0.2s ease'
-                        }}
-                            onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-                            onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                        >
-                            {/* Admin Controls */}
-                            {isAuthenticated && !editingId && (
-                                <div style={{ position: 'absolute', top: '1rem', right: '1rem', display: 'flex', gap: '0.5rem' }}>
-                                    <button onClick={() => handleEdit(s)} style={{ padding: '0.4rem', background: 'var(--color-virgin-blue-light)', border: 'none', borderRadius: '0.5rem', color: 'var(--color-virgin-blue)', cursor: 'pointer', display: 'flex' }}><Edit2 size={16} /></button>
-                                    <button onClick={() => handleDelete(s.id)} style={{ padding: '0.4rem', background: 'var(--color-svd-red-light)', border: 'none', borderRadius: '0.5rem', color: 'var(--color-svd-red)', cursor: 'pointer', display: 'flex' }}><Trash2 size={16} /></button>
+            <div className="container" style={{ padding: '0 1rem' }}>
+                <div className="pastorals-grid" style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'minmax(250px, 1fr) 2fr',
+                    gap: '1.5rem',
+                    alignItems: 'start'
+                }}>
+                    {/* Left List (Sidebar) */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                        {SACRAMENTS.map((s) => (
+                            <button
+                                key={s.id}
+                                onClick={() => setSelectedId(s.id)}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '1rem',
+                                    padding: '1.25rem',
+                                    borderRadius: '1.25rem',
+                                    border: '1px solid',
+                                    borderColor: selectedId === s.id ? s.color : 'var(--color-border)',
+                                    background: selectedId === s.id ? 'white' : 'white',
+                                    boxShadow: selectedId === s.id ? `0 4px 12px ${s.color}20` : 'var(--shadow-sm)',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                                    textAlign: 'left',
+                                    position: 'relative',
+                                    overflow: 'hidden'
+                                }}
+                            >
+                                {selectedId === s.id && (
+                                    <div style={{
+                                        position: 'absolute',
+                                        left: 0,
+                                        top: 0,
+                                        bottom: 0,
+                                        width: '4px',
+                                        background: s.color
+                                    }} />
+                                )}
+                                <div style={{
+                                    padding: '0.6rem',
+                                    borderRadius: '0.75rem',
+                                    background: selectedId === s.id ? `${s.color}15` : 'var(--color-bg)',
+                                    color: s.color
+                                }}>
+                                    <s.icon size={20} />
                                 </div>
-                            )}
+                                <span style={{
+                                    flex: 1,
+                                    fontWeight: '700',
+                                    fontSize: '1.05rem',
+                                    color: selectedId === s.id ? 'var(--color-text-primary)' : 'var(--color-text-secondary)'
+                                }}>
+                                    {s.title}
+                                </span>
+                                <ChevronRight
+                                    size={18}
+                                    color={selectedId === s.id ? s.color : '#cbd5e1'}
+                                    style={{ transform: selectedId === s.id ? 'translateX(0)' : 'translateX(-5px)', transition: 'transform 0.2s' }}
+                                />
+                            </button>
+                        ))}
+                    </div>
 
-                            {editingId === s.id ? (
-                                // Edit Mode
-                                <div className="space-y-3">
-                                    <input
-                                        value={editForm.title}
-                                        onChange={e => setEditForm({ ...editForm, title: e.target.value })}
-                                        className="w-full font-bold text-lg border p-1 rounded"
-                                    />
-                                    {editForm.details.map((detail, idx) => (
-                                        <textarea
-                                            key={idx}
-                                            value={detail.content}
-                                            onChange={e => updateDetail(idx, e.target.value)}
-                                            className="w-full text-sm border p-1 rounded"
-                                            rows={2}
-                                        />
-                                    ))}
-                                    <div className="flex gap-2 justify-end mt-2">
-                                        <button onClick={() => setEditingId(null)} className="p-2 bg-gray-200 rounded"><X size={18} /></button>
-                                        <button onClick={handleSave} className="p-2 bg-blue-600 text-white rounded"><Save size={18} /></button>
-                                    </div>
-                                </div>
-                            ) : (
-                                // View Mode
-                                <>
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <div style={{
-                                            background: 'var(--color-virgin-blue-light)',
-                                            padding: '0.75rem',
-                                            borderRadius: '1rem',
-                                            color: 'var(--color-virgin-blue)',
-                                            display: 'flex'
-                                        }}>
-                                            {renderIcon(s.icon)}
-                                        </div>
-                                        <h2 style={{ fontSize: '1.3rem', fontWeight: '700', color: 'var(--color-text-primary)', letterSpacing: '-0.01em' }}>
-                                            {s.title}
-                                        </h2>
-                                    </div>
-                                    <div style={{ marginTop: '0.5rem' }}>
-                                        {/* Support for simple description (New Pastorals Format) */}
-                                        {s.desc && (
-                                            <div style={{ marginBottom: '1rem' }}>
-                                                {s.image && (
-                                                    <img
-                                                        src={s.image}
-                                                        alt={s.title}
-                                                        style={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: '1rem', marginBottom: '1rem' }}
-                                                    />
-                                                )}
-                                                <p style={{ color: '#4b5563', lineHeight: '1.6', whiteSpace: 'pre-line' }}>{s.desc}</p>
-                                            </div>
-                                        )}
-
-                                        {/* Support for structured details (Legacy/Sacraments Format) */}
-                                        {s.details && s.details.map((detail, idx) => (
-                                            <div key={idx} className={`text-sm text-gray-600 mb-2 ${detail.icon ? 'flex items-start gap-2' : ''}`}>
-                                                {detail.icon === 'calendar' && <Calendar size={16} className="mt-1 shrink-0" />}
-                                                {detail.icon === 'map' && <MapPin size={16} className="mt-1 shrink-0" />}
-                                                {detail.type === 'paragraph' ? (
-                                                    <p className="mt-2">{detail.content}</p>
-                                                ) : (
-                                                    <span>{detail.content}</span>
-                                                )}
-                                            </div>
-                                        ))}
-
-                                        {s.action && (
-                                            <button
-                                                style={{
-                                                    width: '100%',
-                                                    marginTop: '1.25rem',
-                                                    padding: '1rem',
-                                                    borderRadius: '1rem',
-                                                    background: 'var(--color-virgin-blue)',
-                                                    color: 'white',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    gap: '0.5rem',
-                                                    border: 'none',
-                                                    fontWeight: '600',
-                                                    cursor: 'pointer',
-                                                    boxShadow: '0 4px 12px rgba(29, 78, 216, 0.2)',
-                                                    transition: 'all 0.2s'
-                                                }}
-                                                onClick={() => alert(s.action.label)}
-                                                onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'}
-                                                onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                                            >
-                                                <MessageCircle size={18} />
-                                                {s.action.text}
-                                            </button>
-                                        )}
-                                    </div>
-                                </>
-                            )}
+                    {/* Right Details (Desktop) / Detail View */}
+                    <div className="pastoral-detail-card" style={{
+                        background: 'white',
+                        borderRadius: '2rem',
+                        padding: '2.5rem',
+                        boxShadow: 'var(--shadow-md)',
+                        border: '1px solid var(--color-border)',
+                        position: 'sticky',
+                        top: '1rem',
+                        animation: 'fadeIn 0.3s ease-out'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
+                            <div style={{
+                                padding: '1rem',
+                                borderRadius: '1.25rem',
+                                background: `${activeSacrament.color}15`,
+                                color: activeSacrament.color
+                            }}>
+                                <activeSacrament.icon size={32} />
+                            </div>
+                            <h2 style={{ fontSize: '2rem', fontWeight: '900', color: 'var(--color-text-primary)', margin: 0 }}>
+                                {activeSacrament.title}
+                            </h2>
                         </div>
-                    ))}
+
+                        <div style={{ display: 'grid', gap: '2rem' }}>
+                            <section>
+                                <p style={{
+                                    fontSize: '1.1rem',
+                                    lineHeight: '1.7',
+                                    color: 'var(--color-text-secondary)',
+                                    margin: 0,
+                                    fontStyle: 'italic'
+                                }}>
+                                    "{activeSacrament.description}"
+                                </p>
+                            </section>
+
+                            <section style={{
+                                background: 'var(--color-bg)',
+                                padding: '1.5rem',
+                                borderRadius: '1.5rem',
+                                borderLeft: `4px solid ${activeSacrament.color}`
+                            }}>
+                                <h3 style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '0.5rem',
+                                    fontSize: '1rem',
+                                    fontWeight: '800',
+                                    margin: '0 0 1rem',
+                                    color: activeSacrament.color,
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.05em'
+                                }}>
+                                    <FileText size={18} />
+                                    Requisitos
+                                </h3>
+                                <p style={{ margin: 0, color: 'var(--color-text-primary)', fontWeight: '500', lineHeight: '1.6' }}>
+                                    {activeSacrament.requirements}
+                                </p>
+                            </section>
+
+                            <section style={{
+                                background: `${activeSacrament.color}08`,
+                                padding: '1.5rem',
+                                borderRadius: '1.5rem',
+                            }}>
+                                <h3 style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '0.5rem',
+                                    fontSize: '1rem',
+                                    fontWeight: '800',
+                                    margin: '0 0 1rem',
+                                    color: activeSacrament.color,
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.04em'
+                                }}>
+                                    <Phone size={18} />
+                                    Más Información
+                                </h3>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                    <div style={{
+                                        padding: '0.75rem',
+                                        borderRadius: '50%',
+                                        background: 'white',
+                                        color: activeSacrament.color,
+                                        boxShadow: 'var(--shadow-sm)'
+                                    }}>
+                                        <MessageCircle size={20} />
+                                    </div>
+                                    <p style={{ margin: 0, color: 'var(--color-text-primary)', fontWeight: '600' }}>
+                                        {activeSacrament.contact}
+                                    </p>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <style>{`
+                @media (max-width: 800px) {
+                    .pastorals-grid {
+                        grid-template-columns: 1fr !important;
+                    }
+                    .pastoral-detail-card {
+                        position: static !important;
+                        padding: 1.5rem !important;
+                    }
+                }
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(10px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+            `}</style>
         </div>
     );
 }
