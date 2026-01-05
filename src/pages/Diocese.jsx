@@ -1,7 +1,38 @@
 import React, { useState } from 'react';
-import { Users, Building, FileText, Heart, Cross, User, MapPin, ChevronDown, ChevronUp, Briefcase, MessageCircle } from 'lucide-react';
+import { Users, Building, FileText, Heart, Cross, User, MapPin, ChevronDown, ChevronUp, Briefcase, MessageCircle, Phone, Mail } from 'lucide-react';
 
 export default function Diocese() {
+    const chapelsData = [
+        {
+            id: 'medalla',
+            name: "Medalla Milagrosa",
+            coordinator: "A designar",
+            subCoordinator: "A designar",
+            contact: "+54 9 376 ..."
+        },
+        {
+            id: 'pantaleon',
+            name: "San Pantaleón",
+            coordinator: "A designar",
+            subCoordinator: "A designar",
+            contact: "+54 9 376 ..."
+        },
+        {
+            id: 'corazon',
+            name: "Sdo. Corazón de María",
+            coordinator: "A designar",
+            subCoordinator: "A designar",
+            contact: "+54 9 376 ..."
+        },
+        {
+            id: 'cristo',
+            name: "Cristo Obrero",
+            coordinator: "A designar",
+            subCoordinator: "A designar",
+            contact: "+54 9 376 ..."
+        }
+    ];
+
     // Structure Data
     const organizationData = [
         {
@@ -32,18 +63,14 @@ export default function Diocese() {
             ]
         },
         {
+            id: 'chapels', // Special ID to trigger custom rendering
             title: "3. Estructura de Capillas",
             subtitle: "(Las comunidades de base)",
             description: "Cada capilla (Medalla Milagrosa, San Pantaleón, etc.) funciona como una 'pequeña parroquia' dentro de la red.",
             icon: Building,
             color: "var(--color-svd-green)",
             bgColor: "var(--color-svd-green-light)",
-            image: "/images/community_gathering.png",
-            items: [
-                { label: "Coordinador de Capilla", value: "Responsable máximo de la vida comunitaria en su Chacra.", icon: User },
-                { label: "Subcoordinador de Capilla", value: "Apoyo en la logística y reemplazo del coordinador.", icon: User },
-                { label: "Consejo de Capilla", value: "Formado por los referentes de las pastorales de esa sede específica.", icon: Users }
-            ]
+            image: "/images/community_gathering.png"
         },
         {
             title: "4. Estructura de Pastorales",
@@ -100,6 +127,7 @@ export default function Diocese() {
 
     const SectionCard = ({ section }) => {
         const [isOpen, setIsOpen] = useState(true);
+        const [selectedChapel, setSelectedChapel] = useState(chapelsData[0]);
 
         return (
             <div style={{
@@ -164,33 +192,108 @@ export default function Diocese() {
                             {section.description}
                         </p>
 
-                        <div style={{ display: 'grid', gap: '1rem' }}>
-                            {section.items && section.items.map((item, idx) => (
-                                <div key={idx} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', padding: '0.75rem', background: 'var(--color-bg)', borderRadius: '1rem' }}>
-                                    <item.icon size={18} style={{ marginTop: '0.2rem', color: section.color }} />
-                                    <div>
-                                        <h4 style={{ margin: '0 0 0.25rem', fontSize: '0.9rem', fontWeight: '700' }}>{item.label}</h4>
-                                        <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>
-                                            {item.value || <span style={{ color: '#cbd5e1', fontStyle: 'italic' }}>A designar</span>}
-                                        </p>
-                                    </div>
+                        {/* Special Rendering for Chapels Section */}
+                        {section.id === 'chapels' ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                                {/* Chapel Tabs */}
+                                <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
+                                    {chapelsData.map(chapel => (
+                                        <button
+                                            key={chapel.id}
+                                            onClick={() => setSelectedChapel(chapel)}
+                                            style={{
+                                                padding: '0.6rem 1rem',
+                                                borderRadius: '1rem',
+                                                border: 'none',
+                                                background: selectedChapel.id === chapel.id ? section.color : 'var(--color-bg)',
+                                                color: selectedChapel.id === chapel.id ? 'white' : 'var(--color-text-secondary)',
+                                                fontSize: '0.85rem',
+                                                fontWeight: '600',
+                                                whiteSpace: 'nowrap',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s',
+                                                flexShrink: 0
+                                            }}
+                                        >
+                                            {chapel.name}
+                                        </button>
+                                    ))}
                                 </div>
-                            ))}
 
-                            {section.subSections && section.subSections.map((sub, idx) => (
-                                <div key={idx} style={{ marginBottom: '1rem', background: 'var(--color-bg)', padding: '1rem', borderRadius: '1rem' }}>
-                                    <h3 style={{ margin: '0 0 1rem', fontSize: '1rem', color: section.color, fontWeight: '700' }}>{sub.name}</h3>
-                                    <div style={{ display: 'grid', gap: '0.75rem' }}>
-                                        {sub.content.map((c, i) => (
-                                            <div key={i} style={{ display: 'flex', flexDirection: 'column' }}>
-                                                <span style={{ fontSize: '0.85rem', fontWeight: '600' }}>{c.label}:</span>
-                                                <span style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>{c.value}</span>
+                                {/* Selected Chapel Details */}
+                                <div className="animate-fade-in" style={{
+                                    background: 'var(--color-bg)',
+                                    borderRadius: '1.25rem',
+                                    padding: '1.25rem',
+                                    border: `1px solid ${section.color}20`
+                                }}>
+                                    <h3 style={{ margin: '0 0 1rem', fontSize: '1.1rem', fontWeight: '700', color: section.color }}>
+                                        {selectedChapel.name}
+                                    </h3>
+
+                                    <div style={{ display: 'grid', gap: '1rem' }}>
+                                        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                                            <div style={{ padding: '0.4rem', background: 'white', borderRadius: '50%', color: section.color }}>
+                                                <User size={18} />
                                             </div>
-                                        ))}
+                                            <div>
+                                                <span style={{ fontSize: '0.8rem', fontWeight: '700', display: 'block', color: 'var(--color-text-muted)' }}>COORDINADOR</span>
+                                                <span style={{ fontSize: '0.95rem', fontWeight: '500' }}>{selectedChapel.coordinator}</span>
+                                            </div>
+                                        </div>
+
+                                        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                                            <div style={{ padding: '0.4rem', background: 'white', borderRadius: '50%', color: section.color }}>
+                                                <Users size={18} />
+                                            </div>
+                                            <div>
+                                                <span style={{ fontSize: '0.8rem', fontWeight: '700', display: 'block', color: 'var(--color-text-muted)' }}>SUB-COORDINADOR</span>
+                                                <span style={{ fontSize: '0.95rem', fontWeight: '500' }}>{selectedChapel.subCoordinator}</span>
+                                            </div>
+                                        </div>
+
+                                        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                                            <div style={{ padding: '0.4rem', background: 'white', borderRadius: '50%', color: section.color }}>
+                                                <Phone size={18} />
+                                            </div>
+                                            <div>
+                                                <span style={{ fontSize: '0.8rem', fontWeight: '700', display: 'block', color: 'var(--color-text-muted)' }}>CONTACTO</span>
+                                                <span style={{ fontSize: '0.95rem', fontWeight: '500' }}>{selectedChapel.contact}</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
+                            </div>
+                        ) : (
+                            // Default Rendering for other sections
+                            <div style={{ display: 'grid', gap: '1rem' }}>
+                                {section.items && section.items.map((item, idx) => (
+                                    <div key={idx} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', padding: '0.75rem', background: 'var(--color-bg)', borderRadius: '1rem' }}>
+                                        <item.icon size={18} style={{ marginTop: '0.2rem', color: section.color }} />
+                                        <div>
+                                            <h4 style={{ margin: '0 0 0.25rem', fontSize: '0.9rem', fontWeight: '700' }}>{item.label}</h4>
+                                            <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>
+                                                {item.value || <span style={{ color: '#cbd5e1', fontStyle: 'italic' }}>A designar</span>}
+                                            </p>
+                                        </div>
+                                    </div>
+                                ))}
+
+                                {section.subSections && section.subSections.map((sub, idx) => (
+                                    <div key={idx} style={{ marginBottom: '1rem', background: 'var(--color-bg)', padding: '1rem', borderRadius: '1rem' }}>
+                                        <h3 style={{ margin: '0 0 1rem', fontSize: '1rem', color: section.color, fontWeight: '700' }}>{sub.name}</h3>
+                                        <div style={{ display: 'grid', gap: '0.75rem' }}>
+                                            {sub.content.map((c, i) => (
+                                                <div key={i} style={{ display: 'flex', flexDirection: 'column' }}>
+                                                    <span style={{ fontSize: '0.85rem', fontWeight: '600' }}>{c.label}:</span>
+                                                    <span style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>{c.value}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
