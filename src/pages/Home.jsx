@@ -4,6 +4,7 @@ import Calendar from './Calendar'; // Importing the page component
 import { useEvents } from '../context/EventsContext';
 import { useAuth } from '../context/AuthContext';
 import { useNews } from '../hooks/useNews';
+import { useDailyReadings } from '../hooks/useDailyReadings';
 import { useNavigate } from 'react-router-dom';
 import { isSameDay, parseISO, isAfter, format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -73,66 +74,97 @@ export default function Home() {
         return typeMap[type] || { bg: 'var(--color-default-light)', color: 'var(--color-default)' };
     };
 
+    const { readings, loading: readingLoading } = useDailyReadings();
+
     return (
         <div className="animate-fade-in" style={{ paddingBottom: '120px' }}>
-            {/* Header with Background Pattern/Gradient */}
+            {/* Header with Background Image and Readings */}
             <header style={{
-                padding: '2rem 1.5rem 3rem',
-                background: 'linear-gradient(135deg, var(--color-svd-green) 0%, #064e3b 100%)',
+                position: 'relative',
+                padding: '1.5rem 1.5rem 2.5rem',
                 color: 'white',
                 borderBottomLeftRadius: '2.5rem',
                 borderBottomRightRadius: '2.5rem',
-                marginBottom: '2rem',
+                marginBottom: '1rem',
                 boxShadow: 'var(--shadow-lg)',
-                position: 'relative',
                 overflow: 'hidden'
             }}>
-                {/* Subtle Decorative Circle */}
+                {/* Background Image & Overlay */}
                 <div style={{
                     position: 'absolute',
-                    top: '-20px',
-                    right: '-20px',
-                    width: '120px',
-                    height: '120px',
-                    borderRadius: '50%',
-                    background: 'rgba(255,255,255,0.05)',
-                }} />
+                    top: 0, left: 0, right: 0, height: '100%',
+                    borderRadius: '0 0 2.5rem 2.5rem',
+                    overflow: 'hidden',
+                    zIndex: 0
+                }}>
+                    <div style={{
+                        width: '100%', height: '100%',
+                        backgroundImage: 'url(/images/home_header.jpg)',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center 30%' // Adjusted to show church better
+                    }} />
+                    <div style={{
+                        position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                        background: 'linear-gradient(to bottom, rgba(6, 78, 59, 0.4) 0%, rgba(6, 78, 59, 0.8) 100%)',
+                        backdropFilter: 'blur(0px)' // Removed blur to seeing the photo clearly
+                    }} />
+                </div>
 
+                {/* Top Bar content */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative', zIndex: 1 }}>
                     <div>
-                        <h1 style={{ fontSize: '1.5rem', fontWeight: '800', margin: 0, letterSpacing: '-0.025em' }}>ICM Parroquia</h1>
-                        <p style={{ margin: '0.25rem 0 0', opacity: 0.8, fontSize: '0.9rem', fontWeight: '400' }}>Inmaculado Corazón de María</p>
+                        <h1 style={{ fontSize: '1.5rem', fontWeight: '800', margin: 0, letterSpacing: '-0.025em', textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}>ICM Parroquia</h1>
+                        <p style={{ margin: '0.1rem 0 0', opacity: 1, fontSize: '0.85rem', fontWeight: '500', textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>Inmaculado Corazón de María</p>
                     </div>
-                    <div style={{ display: 'flex', gap: '0.75rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        {/* Daily Reading Minimal Card (Integrated here) */}
+                        {!readingLoading && readings && (
+                            <div style={{
+                                background: 'rgba(255, 255, 255, 0.15)',
+                                backdropFilter: 'blur(10px)',
+                                borderRadius: '1rem',
+                                padding: '0.6rem 0.8rem',
+                                border: '1px solid rgba(255, 255, 255, 0.2)',
+                                textAlign: 'right',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'flex-end',
+                                gap: '0.1rem'
+                            }}>
+                                <span style={{ fontSize: '0.7rem', fontWeight: '700', textTransform: 'uppercase', color: 'rgba(255,255,255,0.8)', letterSpacing: '0.02em' }}>
+                                    {readings.date}
+                                </span>
+                                <span style={{ fontSize: '0.85rem', fontWeight: '700', color: 'white', lineHeight: '1.1' }}>
+                                    {readings.saint}
+                                </span>
+                                <span style={{ fontSize: '0.75rem', fontWeight: '600', color: 'var(--color-section-gold)' }}>
+                                    {readings.gospel?.ref}
+                                </span>
+                            </div>
+                        )}
+
                         {isAuthenticated && (
                             <button
                                 onClick={() => navigate('/admin')}
                                 style={{
-                                    background: 'rgba(255,255,255,0.15)',
+                                    background: 'rgba(0,0,0,0.3)',
                                     backdropFilter: 'blur(8px)',
                                     padding: '0.6rem',
                                     borderRadius: '1rem',
                                     border: '1px solid rgba(255,255,255,0.2)',
                                     color: 'white',
                                     cursor: 'pointer',
-                                    transition: 'all 0.2s'
+                                    transition: 'all 0.2s',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
                                 }}
                                 title="Panel de Administración"
                             >
                                 <Settings size={20} />
                             </button>
                         )}
-                        <button style={{
-                            background: 'rgba(255,255,255,0.15)',
-                            backdropFilter: 'blur(8px)',
-                            padding: '0.6rem',
-                            borderRadius: '1rem',
-                            border: '1px solid rgba(255,255,255,0.2)',
-                            color: 'white',
-                            cursor: 'pointer'
-                        }}>
-                            <Bell size={20} />
-                        </button>
+                        {/* Removed Bell button to clean up header as per new minimal look */}
                     </div>
                 </div>
             </header>
