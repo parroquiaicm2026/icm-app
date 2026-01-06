@@ -1,13 +1,11 @@
 import React from 'react';
 import { Bell, BookOpen, Clock, Calendar as CalendarIcon, MapPin, Plus, Settings, Trash2, ArrowRight } from 'lucide-react';
-import Calendar from './Calendar'; // Importing the page component
 import { useEvents } from '../context/EventsContext';
 import { useAuth } from '../context/AuthContext';
 import { useNews } from '../hooks/useNews';
 import { useDailyReadings } from '../hooks/useDailyReadings';
 import { useNavigate } from 'react-router-dom';
-import { isSameDay, parseISO, isAfter, format } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { isSameDay, parseISO, isAfter } from 'date-fns';
 
 export default function Home() {
     const { events, deleteEvent } = useEvents();
@@ -15,7 +13,6 @@ export default function Home() {
     const news = useNews();
     const navigate = useNavigate();
     const today = new Date();
-    const [selectedDate, setSelectedDate] = React.useState(null);
 
     const motivationalMessages = [
         "¡Hoy es un gran día para compartir el amor de Dios!",
@@ -36,20 +33,16 @@ export default function Home() {
         return motivationalMessages[index];
     };
 
-    // If a date is selected, show events for that date. Otherwise show today's events.
-    const activeDate = selectedDate || today;
-    const activeEvents = events.filter(ev => isSameDay(parseISO(ev.date), activeDate));
+    // Show today's events
+    const todayEvents = events.filter(ev => isSameDay(parseISO(ev.date), today));
 
-    // For the header title
-    const isShowingSelected = selectedDate && !isSameDay(selectedDate, today);
-
-    // Filter upcoming events (next 2) only if not showing a specific selected date
+    // Filter upcoming events (next 2) if no events today
     const upcomingEvents = events
         .filter(ev => isAfter(parseISO(ev.date), today))
         .sort((a, b) => new Date(a.date) - new Date(b.date))
         .slice(0, 2);
 
-    const displayEvents = activeEvents.length > 0 ? activeEvents : (isShowingSelected ? [] : upcomingEvents);
+    const displayEvents = todayEvents.length > 0 ? todayEvents : upcomingEvents;
 
     // Helper function to get color based on event type
     const getEventColor = (type) => {
@@ -171,7 +164,7 @@ export default function Home() {
 
             <div className="container" style={{ padding: '0 1.25rem' }}>
 
-                <div className={!selectedDate ? "home-content-grid" : ""}>
+                <div className="home-content-grid">
                     {/* Actividades Section */}
                     <section style={{
                         marginBottom: '2.5rem',
@@ -191,9 +184,7 @@ export default function Home() {
                                 }}>
                                     <Clock size={18} />
                                 </div>
-                                {isShowingSelected
-                                    ? `Actividades ${format(selectedDate, "d 'de' MMM", { locale: es })}`
-                                    : (activeEvents.length > 0 ? "Actividades de Hoy" : "Próximas Actividades")}
+                                {todayEvents.length > 0 ? "Actividades de Hoy" : "Próximas Actividades"}
                             </h2>
                             {isAuthenticated && (
                                 <button
@@ -248,7 +239,7 @@ export default function Home() {
                                                 <h3 style={{ margin: '0 0 0.35rem', fontSize: '1.05rem', fontWeight: '700', color: 'var(--color-text-primary)' }}>{ev.title}</h3>
                                                 <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--color-text-secondary)', lineHeight: '1.4' }}>{ev.desc || ev.type}</p>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.75rem', flexWrap: 'wrap' }}>
-                                                    {(!selectedDate || !isSameDay(selectedDate, today)) && (
+                                                    {todayEvents.length === 0 && (
                                                         <span style={{
                                                             fontSize: '0.75rem',
                                                             fontWeight: '700',
@@ -320,66 +311,41 @@ export default function Home() {
                                         fontStyle: 'italic',
                                         lineHeight: '1.5'
                                     }}>
-                                        "{getMotivationalMessage(activeDate)}"
+                                        "{getMotivationalMessage(today)}"
                                     </p>
                                     <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
                                         No hay actividades programadas para esta fecha.
                                     </p>
                                 </div>
                             )}
-                            {!isShowingSelected && (
-                                <button
-                                    onClick={() => navigate('/calendar')}
-                                    style={{
-                                        alignSelf: 'center',
-                                        marginTop: '0.5rem',
-                                        background: 'transparent',
-                                        border: 'none',
-                                        color: 'var(--color-svd-green)',
-                                        fontSize: '0.95rem',
-                                        fontWeight: '600',
-                                        cursor: 'pointer',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '0.5rem',
-                                        padding: '0.5rem 1rem',
-                                        borderRadius: '1rem',
-                                        transition: 'background 0.2s'
-                                    }}
-                                    onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-svd-green-light)'}
-                                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                                >
-                                    Ver agenda completa <ArrowRight size={18} />
-                                </button>
-                            )}
-                            {isShowingSelected && (
-                                <button
-                                    onClick={() => setSelectedDate(null)}
-                                    style={{
-                                        alignSelf: 'center',
-                                        padding: '0.6rem 1.5rem',
-                                        fontSize: '0.9rem',
-                                        fontWeight: '600',
-                                        color: 'white',
-                                        background: 'var(--color-svd-green)',
-                                        border: 'none',
-                                        borderRadius: '2rem',
-                                        marginTop: '1rem',
-                                        cursor: 'pointer',
-                                        boxShadow: '0 4px 12px rgba(22, 101, 52, 0.2)',
-                                        transition: 'all 0.2s'
-                                    }}
-                                    onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-                                    onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                                >
-                                    Volver a Hoy
-                                </button>
-                            )}
+                            <button
+                                onClick={() => navigate('/calendar')}
+                                style={{
+                                    alignSelf: 'center',
+                                    marginTop: '0.5rem',
+                                    background: 'transparent',
+                                    border: 'none',
+                                    color: 'var(--color-svd-green)',
+                                    fontSize: '0.95rem',
+                                    fontWeight: '600',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '0.5rem',
+                                    padding: '0.5rem 1rem',
+                                    borderRadius: '1rem',
+                                    transition: 'background 0.2s'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-svd-green-light)'}
+                                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                            >
+                                Ver agenda completa <ArrowRight size={18} />
+                            </button>
                         </div>
                     </section>
 
-                    {/* News Section - Only visible when no date is selected */}
-                    {!selectedDate && news.length > 0 && (
+                    {/* News Section */}
+                    {news.length > 0 && (
                         <section style={{ marginBottom: '2.5rem' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                                 <h2 style={{ fontSize: '1.2rem', fontWeight: '700', margin: 0, display: 'flex', alignItems: 'center', gap: '0.6rem', color: 'var(--color-text-primary)' }}>
@@ -467,7 +433,37 @@ export default function Home() {
                         </div>
                         <h2 style={{ fontSize: '1.1rem', fontWeight: '700', margin: 0, color: 'var(--color-text-primary)' }}>Explorar Calendario</h2>
                     </div>
-                    <Calendar embedded={true} onDateSelect={setSelectedDate} />
+                    <button
+                        onClick={() => navigate('/calendar')}
+                        style={{
+                            width: '100%',
+                            padding: '1.5rem',
+                            background: 'white',
+                            border: '2px solid var(--color-collection-gold)',
+                            borderRadius: '1.5rem',
+                            color: 'var(--color-collection-gold)',
+                            fontSize: '1rem',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '0.5rem',
+                            transition: 'all 0.2s',
+                            boxShadow: 'var(--shadow-sm)'
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.background = 'var(--color-collection-gold)';
+                            e.currentTarget.style.color = 'white';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.background = 'white';
+                            e.currentTarget.style.color = 'var(--color-collection-gold)';
+                        }}
+                    >
+                        <CalendarIcon size={20} />
+                        Ver Calendario Completo
+                    </button>
                 </section>
 
             </div>

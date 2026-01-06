@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
-    Heart, Users, Droplets, BookOpen, Flame, HandMetal,
-    Ring, Cross, MessageCircle, Phone, FileText, ChevronRight
+    Heart, Users, Droplets, BookOpen, Flame, HelpingHand,
+    Bell, Church, MessageCircle, Phone, FileText, ChevronRight
 } from 'lucide-react';
 
 const SACRAMENTS = [
@@ -44,7 +44,7 @@ const SACRAMENTS = [
     {
         id: 'uncion',
         title: "Unción de los Enfermos",
-        icon: HandMetal,
+        icon: HelpingHand,
         color: "#10b981",
         description: "Con la sagrada unción de los enfermos y con la oración de los presbíteros, toda la Iglesia entera encomienda a los enfermos al Señor.",
         requirements: "Estar atravesando una enfermedad grave o avanzada edad.",
@@ -53,7 +53,7 @@ const SACRAMENTS = [
     {
         id: 'matrimonio',
         title: "Matrimonio",
-        icon: Ring,
+        icon: Bell,
         color: "#ec4899",
         description: "La alianza matrimonial, por la que el varón y la mujer constituyen entre sí un consorcio de toda la vida, ordenada por su misma índole natural al bien de los cónyuges.",
         requirements: "Partida de Bautismo legalizada para matrimonio, DNI, cursillo prematrimonial.",
@@ -62,7 +62,7 @@ const SACRAMENTS = [
     {
         id: 'orden',
         title: "Orden Sagrado",
-        icon: Cross,
+        icon: Church,
         color: "#6366f1",
         description: "El Orden es el sacramento gracias al cual la misión confiada por Cristo a sus Apóstoles sigue siendo ejercida en la Iglesia hasta el fin de los tiempos.",
         requirements: "Inquietud vocacional. Acompañamiento espiritual con el Párroco.",
